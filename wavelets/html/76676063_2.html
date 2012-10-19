@@ -1,0 +1,238 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Assig_2</title><meta name="generator" content="MATLAB 7.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2012-02-03"><meta name="DC.source" content="Assig_2.m"><style type="text/css">
+
+body {
+  background-color: white;
+  margin:10px;
+}
+
+h1 {
+  color: #990000; 
+  font-size: x-large;
+}
+
+h2 {
+  color: #990000;
+  font-size: medium;
+}
+
+/* Make the text shrink to fit narrow windows, but not stretch too far in 
+wide windows. */ 
+p,h1,h2,div.content div {
+  max-width: 600px;
+  /* Hack for IE6 */
+  width: auto !important; width: 600px;
+}
+
+pre.codeinput {
+  background: #EEEEEE;
+  padding: 10px;
+}
+@media print {
+  pre.codeinput {word-wrap:break-word; width:100%;}
+} 
+
+span.keyword {color: #0000FF}
+span.comment {color: #228B22}
+span.string {color: #A020F0}
+span.untermstring {color: #B20000}
+span.syscmd {color: #B28C00}
+
+pre.codeoutput {
+  color: #666666;
+  padding: 10px;
+}
+
+pre.error {
+  color: red;
+}
+
+p.footer {
+  text-align: right;
+  font-size: xx-small;
+  font-weight: lighter;
+  font-style: italic;
+  color: gray;
+}
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Ben Postlethwaite 76676063</a></li><li><a href="#3">Exercise 1 - 1D Haar Wavelets</a></li><li><a href="#4">Question 2</a></li></ul></div><h2>Ben Postlethwaite 76676063<a name="1"></a></h2><p><b>Assignment 2</b></p><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>;
+loadtools;
+</pre><p>Select Image</p><pre class="codeinput">name = <span class="string">'piece-regular'</span>;
+n = 512;
+f = rescale( load_signal(name, n) );
+</pre><h2>Exercise 1 - 1D Haar Wavelets<a name="3"></a></h2><pre class="codeinput">fw = f;
+jj = 8;
+
+Detail = [];
+
+figure(1)
+
+
+<span class="keyword">for</span> ii = 1:jj+1
+    j = log2(n)-ii;
+    A = fw(1:2^(j+1));
+    coarse = ( A(1:2:length(A)) + A(2:2:length(A)) )/sqrt(2);
+    detail = ( A(1:2:length(A)) - A(2:2:length(A)) )/sqrt(2);
+    Detail = [detail; Detail];
+    fw = [coarse; Detail];
+<span class="keyword">end</span>
+
+figure(1)
+subplot(4,1,1)
+    plot(f)
+    axis <span class="string">tight</span>
+    title(<span class="string">'signal'</span>)
+
+<span class="keyword">for</span> ii = 1:3
+    subplot(4,1,ii+1)
+        plot(fw( (2^(jj+1-ii))+1 : (2^(jj+2-ii)) ) )
+        title(sprintf(<span class="string">'Detail j = %i'</span>,j))
+        axis <span class="string">tight</span>
+<span class="keyword">end</span>
+
+disp(strcat([<span class="string">'Energy of the signal       = '</span> num2str(norm(f).^2,3)]));
+disp(strcat([<span class="string">'Energy of the coefficients = '</span> num2str(norm(fw).^2,3)]));
+
+figure(2)
+plot_wavelet(fw);
+title(<span class="string">'Wavelet Transform'</span>)
+axis([1 n -2 2]);
+</pre><pre class="codeoutput">Energy of the signal       = 88.6
+Energy of the coefficients = 88.6
+</pre><img vspace="5" hspace="5" src="Assig_2_01.png" alt=""> <img vspace="5" hspace="5" src="Assig_2_02.png" alt=""> <h2>Question 2<a name="4"></a></h2><pre class="codeinput">f1 = fw;
+Coarse = [];
+
+<span class="keyword">for</span> j = 0:jj
+    coarse = f1(1:2^j);
+    Detail = f1(2^j+1:2^(j+1));
+    f1(1:2:2^(j+1)) = ( coarse + Detail )/sqrt(2);
+    f1(2:2:2^(j+1)) = ( coarse - Detail )/sqrt(2);
+    Coarse = [Coarse ;coarse];
+<span class="keyword">end</span>
+
+disp(strcat(([<span class="string">'Error |f-f1|/|f| = '</span> num2str(norm(f-f1)/norm(f))])));
+
+figure(3)
+subplot(4,1,1)
+    plot(f);
+    title(<span class="string">'Partial Reconstruction, j = 8'</span>)
+    hold <span class="string">on</span>;
+    plot(f1,<span class="string">'*'</span>)
+    axis <span class="string">tight</span>
+<span class="keyword">for</span> ii = 1:3
+subplot(4,1,ii+1)
+    plot(Coarse( (2^(jj+1-ii)) : (2^(jj+2-ii)) - 1),<span class="string">'-*'</span>)
+    title(sprintf(<span class="string">'Partial Reconstruction, j = %i '</span>,jj-ii))
+    axis <span class="string">tight</span>
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Error |f-f1|/|f| = 1.0168e-15
+</pre><img vspace="5" hspace="5" src="Assig_2_03.png" alt=""> <p class="footer"><br>
+      Published with MATLAB&reg; 7.11<br></p></div><!--
+##### SOURCE BEGIN #####
+%% Ben Postlethwaite 76676063
+% *Assignment 2*
+clear all; close all;
+loadtools;
+%%
+% Select Image
+name = 'piece-regular';
+n = 512;
+f = rescale( load_signal(name, n) );
+
+%% Exercise 1 - 1D Haar Wavelets
+fw = f;
+jj = 8;
+
+Detail = [];
+
+figure(1)
+
+    
+for ii = 1:jj+1
+    j = log2(n)-ii;
+    A = fw(1:2^(j+1));
+    coarse = ( A(1:2:length(A)) + A(2:2:length(A)) )/sqrt(2);
+    detail = ( A(1:2:length(A)) - A(2:2:length(A)) )/sqrt(2);
+    Detail = [detail; Detail];
+    fw = [coarse; Detail];
+end
+
+figure(1)
+subplot(4,1,1)
+    plot(f)
+    axis tight
+    title('signal')
+    
+for ii = 1:3
+    subplot(4,1,ii+1)
+        plot(fw( (2^(jj+1-ii))+1 : (2^(jj+2-ii)) ) )
+        title(sprintf('Detail j = %i',j))
+        axis tight
+end
+
+disp(strcat(['Energy of the signal       = ' num2str(norm(f).^2,3)]));
+disp(strcat(['Energy of the coefficients = ' num2str(norm(fw).^2,3)]));
+
+figure(2)
+plot_wavelet(fw);
+title('Wavelet Transform')
+axis([1 n -2 2]);
+
+%% Question 2
+f1 = fw;
+Coarse = [];
+
+for j = 0:jj
+    coarse = f1(1:2^j);
+    Detail = f1(2^j+1:2^(j+1));
+    f1(1:2:2^(j+1)) = ( coarse + Detail )/sqrt(2);
+    f1(2:2:2^(j+1)) = ( coarse - Detail )/sqrt(2);
+    Coarse = [Coarse ;coarse];
+end    
+
+disp(strcat((['Error |f-f1|/|f| = ' num2str(norm(f-f1)/norm(f))])));
+
+figure(3)
+subplot(4,1,1)
+    plot(f);
+    title('Partial Reconstruction, j = 8')
+    hold on;
+    plot(f1,'*')
+    axis tight
+for ii = 1:3
+subplot(4,1,ii+1)
+    plot(Coarse( (2^(jj+1-ii)) : (2^(jj+2-ii)) - 1),'-*')
+    title(sprintf('Partial Reconstruction, j = %i ',jj-ii))
+    axis tight
+    hold on
+end    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+##### SOURCE END #####
+--></body></html>

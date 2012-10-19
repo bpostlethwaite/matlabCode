@@ -1,0 +1,15 @@
+function bcurve = birthgraph(temp,T_opt,k)
+% BIRTHGRAPH - shows the bellcurve birthrate modifier for daisy type.
+%   This function uses k values and t_opt to be used to create a graph
+%   showing the curve of the birth function at particular temperatures.
+
+bcurve=zeros(100);
+for ii = 1:100
+    if abs(temp(ii) - T_opt) < k^(-1/2)
+    bcurve(ii) = 1 - k*(temp(ii) - T_opt)^2;
+    else
+    bcurve(ii) = 0;
+    
+    end
+    
+end

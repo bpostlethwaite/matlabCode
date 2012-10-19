@@ -1,0 +1,28 @@
+% Example 9.5 -- Table 9.2
+
+% exact solution
+xe = [3,.5]';
+phie = phi(xe);
+nmax = 20; tol = 1.e-6;
+
+% first initial guess
+x0 = [8,.2]';
+% second initial guess
+%x0 = [8,.8]';
+
+fprintf ('k       ||x_k - x*||   phi_k - phi*  -f_kp_k  \n')
+
+% apply Newton's method and print after each step
+for k=1:nmax
+  [fx,Jx] = feval(f,x);
+  fprintf ('%d     %e     \n',k-1,norm(fx) )
+  p = -Jx \ fx;
+  x = x + p;  
+  if norm(p) < tol*(1+norm(x))
+    fx = feval(f,x);   
+    fprintf ('%d     %e     \n',k,norm(fx) ) 
+    return
+  end
+end
+
+[x,k] = newtons(@funv,x0,1.e-6,20);

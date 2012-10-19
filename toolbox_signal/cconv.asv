@@ -1,0 +1,24 @@
+function y = cconv(x,h,d)
+
+% cconv - spatial domain circular convolution
+%
+%   y = cconv(x,h,d);
+%
+%   Circular convolution on dimension.
+%
+%   If p=length(h) is odd then h((p+1)/2) corresponds to the zero position.
+%   If p is even, h(p/2) corresponds to the zero position.
+%
+%   Copyright (c) 2009 Gabriel Peyre
+
+p = length(h);
+if mod(p,2)==0
+    pc = p/2;
+else
+    pc = (p+1)/2;
+end
+
+y = zeros(size(x));
+for i=1:length(h)
+    y = y + h(i)*circshift(x,i-pc);  
+end

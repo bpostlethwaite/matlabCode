@@ -1,0 +1,21 @@
+clear all;
+close all;
+%Set varia
+Topt=22.5;
+Tmin=-40; Tmax=60; Tpoints=1000;
+T=linspace(Tmin,Tmax,Tpoints);
+k=17.5^-2;
+
+% set birthrate formula depending on T
+birthrate=1-k.*(T-Topt).^2;
+
+% create logical array for capping Birthrate, ie, if logical is true than
+% Birthrate is function above, if false birthrate = 0
+Tdiff=T-Topt;
+birthcap=abs(Tdiff)>=k^(-0.5);
+
+% Apply logical birthcap to birthrate to zero elements where T-Topt is less
+% than k^(-0.5)
+birthrate(birthcap)=0;
+
+plot(T,birthrate);

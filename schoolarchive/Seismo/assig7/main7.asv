@@ -1,0 +1,26 @@
+% Seismo inversion
+close all
+plot(x,tred,'*')
+
+sec = [0,15,19,40,52];
+A0 = [x(1:sec(2)-1)];   
+m(:,1) = (A0'*A0)\A0'*t(1:sec(2)-1);
+for ii = 2:length(sec)-1
+A = [ones(sec(ii+1)-sec(ii),1),x(sec(ii):sec(ii+1)-1)];
+m(:,ii) = (A'*A)\A'*t(sec(ii):sec(ii+1)-1);
+
+end
+
+
+Tau = m(1,:)';
+
+G(ii,jj) = 2*sqrt((1/m(2jj))^2 - p(ii)^2);
+
+
+
+% figure(2)
+% for ii = 1:length(m)
+%     hold on
+% plot(x,m(1,ii) + m(2,ii)*x,'r')
+% end
+% plot(x,t,'*')

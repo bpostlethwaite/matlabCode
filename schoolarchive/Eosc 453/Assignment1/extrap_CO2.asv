@@ -1,0 +1,30 @@
+function [v, y] = extrap_CO2(e_GtC_yr,t_yr)
+% EXTRAP_CO2 - Function extrapolating CO2 data to year 2150
+% uses cubic splines method and some sweet matrix coefficient solving.
+% The reason for this is that I have no data past the year 2100 in the 
+% IPCC report. There data only gives up to 2100. So I extrapolate 50 years
+% ahead.
+
+year=linspace(1850,2100,26); %Creates year vector with 26 points
+co2_emission=e_GtC_yr(1:15); % Creates 15 point co2 emission data (- anything past 2100)
+year_data = t_yr(1:15); %Match the years with the vector above
+co2_year=interp1(year_data,co2_emission,year); %interpolate data into 26 points (by decade)
+t=(1850:10:2100); % set a t value
+n = length(t); % length
+s = (t-1975)/125; % I don't know, I copied the next procedure from matlab help
+A = zeros(n); % Zero matrix
+A(:,end) = 1; % 1 matrix
+for j = n-1:-1:1, A(:,j) = s' .* A(:,j+1); end % no idea
+c = A(:,n-3:n)\co2_year'; % coefficients of polynomial
+
+e = (1850:2150)';
+x = (v-1975)/125;
+y = polyval(c,x);
+
+
+% hold on
+% plot(v,y,'k-');
+% plot(2150,z,'ks');
+% hold off
+
+end

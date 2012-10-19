@@ -1,0 +1,5 @@
+Submitted manuscript:
+Modelling and compact inversion of magnetic data: a Matlab code.
+
+Authors:
+Stefano Stocco, Alberto Godio, Luigi Sambuelli

@@ -1,0 +1,143 @@
+% % % % % PROBLEM SET 2     BEN POSTLETHWAITE
+clear all
+close all
+
+%% PART 1 
+% Variables & Inputs
+Fs = 2; %frequency sample rate
+L = 100; %total length of time series in seconds
+delta_t = 1/Fs; % sample time
+t_series=(0:L-1)*delta_t; %time series 100s long with sample rate
+N=length(t_series); % N sample points
+T=10; %10 full cycles
+w=2*pi*1/T; %Create an omega for use in function
+Fnyq = Fs/2 ; % Nyquist frequency. Ie, min resolvable frequency
+fn= (-N/2+Fs/N : N/2)*Fs/N; % this centres the reflection about the origin. Normalized
+%for the number of points, n, in the FFt.
+
+%% Functions
+y1 = sin(w*t_series); %create a sine function, sampled twice a second into variable y
+Y1 = abs(fft(y1)); %putting the n in there pads the time series with zeros to length n
+Y1shift = fftshift(Y1); % shifts the reflection about the origin
+Y1b = fft(y1); %for part e, testing  the reversibility of the FFT
+y_return = ifft(Y1b); % Inverse FFT
+%% Plots
+figure(1)
+plot(t_series,y1,t_series,y_return,'*')
+title('question 1a');
+xlabel('time');
+ylabel('amplitude');
+
+figure(2)
+
+subplot(3,1,1)
+    plot(Y1)
+    xlabel('frequency [Hz]')
+    ylabel('amplitude')
+    title('question 1b')
+subplot(3,1,2)
+    plot(Y1shift)
+    xlabel('frequency [Hz]')
+    ylabel('amplitude')
+    title('question 1c')
+ subplot(3,1,3);
+    plot(fn,Y1shift)
+    xlabel('frequency [Hz]')
+    ylabel('amplitude')
+    title('question 1d: Frequency Spectrum with proper f axis')
+    
+ 
+ %% PART 2
+for ii = 1:3 
+% Variables & Inputs
+Fs = [1/2,1/4,1/8]; %frequency sample rate
+L = 108; %total length of time series in seconds
+delta_t = 1/Fs(ii); % sample time
+t_series=(0:L-1)*delta_t; %time series 100s long with sample rate
+N=length(t_series); % N sample points
+T=10; %10 full cycles
+w=2*pi*1/T; %Create an omega for use in function
+Fnyq(ii) = Fs(ii)/2 ; % Nyquist frequency. Ie, min resolvable frequency
+fn2 = (-N/2+Fs(ii)/N : N/2)*Fs(ii)/N; % this centres the reflection about the origin. Normalized
+%for the number of points, n, in the FFt.
+%% Functions
+y2 = sin(w*t_series); %create a sine function, sampled ii a second into variable y
+Y2 = abs(fft(y2)); %putting the n in there pads the time series with zeros to length n
+Y2shift = fftshift(Y2); % shifts the reflection about the origin
+%%  Plots
+figure(3)
+subplot(3,1,ii)
+    plot(fn2,Y2shift)
+    xlabel('frequency [Hz]')
+    ylabel('amplitude')
+    title(sprintf('question 2 with interval %d seconds',delta_t))
+    xlim([-0.25,0.25])
+end
+    
+%% PART 3 
+% Variables & Inputs
+Fs = 1; %frequency sample rate
+L = 100; %total length of time series in seconds
+delta_t = 1/Fs; % sample time
+t_series=(0:L-1)*delta_t; %time series 100s long with sample rate
+N=length(t_series); % N sample points
+T=10; %10 full cycles
+T2=25;
+w=2*pi*1/T; %Create an omega for use in function
+w2=2*pi*1/T2; %Create an omega for use in function
+Fnyq = Fs/2 ; % Nyquist frequency. Ie, max resolvable frequency
+fn= (-N/2+Fs/N : N/2)*Fs/N; % this centres the reflection about the origin. Normalized
+noise=rand([1,N]);
+%for the number of points, n, in the FFt.
+
+%% Functions
+g3 = sin(w*t_series); %create a sine function, sampled twice a second into variable y
+h3 = 4*cos(w2*t_series);
+y3 = g3 + h3; %y3 is the two periodic functions added together
+y4 = noise + y3; % adds noise to y3
+NOISE = noise*10; % order of magnitude higher
+y4NOISE = y3 + NOISE; % new y4 function with higher noise
+Y3 = abs(fft(y3)); %putting the n in there pads the time series with zeros to length n
+Y3shift = fftshift(Y3); % shifts the reflection about the origin
+Y4 = abs(fft(y4));
+Y4shift = fftshift(Y4);
+Y4NOISE= abs(fft(y4NOISE));
+Y4NOISEshift = fftshift(Y4NOISE);
+y4n_mean = mean(y4NOISE); % Calculating mean of noise added T_series
+y4n_mean_rem = y4NOISE - y4n_mean; %Removing Mean from noise added T_series
+Y4N_mean_rem = fftshift(abs(fft(y4n_mean_rem))); %FFT of mean removed T_series
+%% PLOTs
+figure(3)
+subplot(3,1,1)
+    plot(t_series,g3,'b',t_series,h3,'k',t_series,y3,'r')
+    xlabel('time [s]')
+    ylabel('amplitude')
+    title('question 3a: Sine wave, Cosine and their addition')
+    legend('sine wave','cosine','sum of two waves')
+subplot(3,1,2)
+    plot(fn,Y3shift)
+    xlabel('frequency [Hz]')
+    ylabel('amplitude')
+    title('question 3b: FFT of time series w/ addition of two waves')
+ subplot(3,1,3);
+    plot(fn,Y4shift)
+    xlabel('frequency [Hz]')
+    ylabel('amplitude')
+    title('question 3c: FFT of noise added time series')
+    
+figure(4)
+subplot(3,1,1)
+    plot(t_series,y4NOISE)
+    xlabel('time [s]')
+    ylabel('amplitude')
+    title('question 3d:10 x noise with the addition of two periodic functions')
+subplot(3,1,2)
+    plot(fn,Y4NOISEshift)
+    xlabel('frequency [Hz]')
+    ylabel('amplitude')
+    title('question 3d: the FFT of above t series')
+subplot(3,1,3)
+    plot(fn,Y4N_mean_rem)
+    xlabel('frequency [Hz]')
+    ylabel('amplitude')
+    title('FFT of time series with DC term (mean of noise added Tseries) removed')

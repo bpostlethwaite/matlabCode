@@ -1,0 +1,17 @@
+function y = upsample(x,p)
+
+% upsamplg - add n zeros between samples
+%
+%   y = upsample(x,n);
+%
+%   default is n==2
+%
+%   Copyright (c) 2009 Gabriel Peyre
+
+if nargin==1
+    n = 2;
+end
+
+b = x; 
+x = zeros(n*length(f1),1); 
+x(1:n:) = b;

@@ -1,0 +1,28 @@
+
+             =================================
+              RestoreTools, Version 1.2_beta_1
+             =================================
+
+This beta version contains several new functions for direct methods,
+including better SVD and Tikhonov regularization capabilities.
+
+"RestoreTools" is an object oriented Matlab implementation of
+algorithms that can be used for image restoration problems.  Some
+examples illustrating how to use this package can be found in the
+directory ./Examples
+
+This current version, 1.2b1, can be used for iterative image restoration
+methods.  Direct methods TSVD and Tikhonov can also be used.
+
+The principal developers of the code are:
+
+   Katrina Palmer Lee, James Nagy, Lisa Perrone and Ryan Wright
+                Emory University
+             Atlanta Georgia, USA
+
+This software has been developed as a pedagogical and research tool, 
+and is provided "as is", without any warranty of any kind.
+
+Please send bug reports to:  nagy@mathcs.emory.edu
+
+Last modified:  06 January, 2003.

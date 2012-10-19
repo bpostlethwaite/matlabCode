@@ -1,0 +1,23 @@
+% Assignment 9
+% Ben Postlethwaite
+run seismo8;
+mGuess = [90;90;12];
+
+for ii = 1:15    
+
+figure(1)
+hold on
+plot(mGuess(1),mGuess(2),'vk')
+    
+    
+r = tq1 - sqrt((mGuess(1)-xcrd).^2+(mGuess(2)-ycrd).^2)/vel - mGuess(3);
+g = sqrt((xcrd - mGuess(1)).^2 + (ycrd-mGuess(2)).^2)*vel/5;
+G = [(mGuess(1)-xcrd)./(g) ,(mGuess(2)-ycrd)./(g) ,ones(length(ycrd),1)];
+  
+mcor = G\r;
+mGuess = mGuess + mcor;
+
+
+end
+
+

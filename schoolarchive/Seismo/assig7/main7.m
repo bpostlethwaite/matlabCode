@@ -1,0 +1,82 @@
+% Seismo inversion
+close all
+clear all
+load data.mat
+
+%sec    = [0,5,11,17,26,39,60]; %0.0124
+sec    = [0,5,22,37,49,60]; %0.0108
+%sec    =  [0,5,20,39,60]; %0.0108
+%sec    = [0,4,21,29,37,47,60]; %0.0110
+%sec    = [0,11,27,38,48,60];
+A0     = x(1:sec(2)-1);   
+m(2,1) = (A0'*A0)\A0'*t(1:sec(2)-1);
+m(1,1) = 0;
+TAU    = ones(sec(2),1).*m(1,1);
+P      = ones(sec(2),1).*m(2,1);
+% Create tangent lines to points defined in sec
+for ii = 2:length(sec)-1
+    A       = [ones(sec(ii+1)-sec(ii),1), x(sec(ii):sec(ii+1)-1)];
+    m(:,ii) = (A'*A)\A'*t(sec(ii):sec(ii+1)-1);
+    TAU     = [TAU; ones(sec(ii+1)-sec(ii),1).*m(1,ii)];
+    P       = [P; ones(sec(ii+1)-sec(ii),1).*m(2,ii)];
+end
+
+
+Tau = m(1,2:end)';
+p   = m(2,:)';
+u   = m(2,:)';
+diff(m(2,:))
+
+for jj = 1:length(m)-1
+    for ii = 2:length(m)
+        G(ii-1,jj) = 2*sqrt((u(jj)^2 - p(ii)^2));
+    end
+end
+
+G=G.*tril(ones(length(m)-1,length(m)-1),1);
+
+% and tau = G * h
+% h = G'G\G'tau
+h(1)=0;
+h(2:length(m)) = (G'*G)\G'*Tau;
+
+[h(1), 1/u(1)
+ h(2), 1/u(1)
+ h(2), 1/u(2)
+ h(3), 1/u(2)
+ h(3), 1/u(3)
+ h(4), 1/u(3)
+ h(4), 1/u(4)]%#ok<NOPTS>
+ %h(5), 1/u(4)
+ %h(5), 1/u(5)]%#ok<NOPTS>
+
+% Least squared error
+Tpred = TAU + P.*x;
+
+error = 1/60 .* sum((t - Tpred).^2) %#ok<NOPTS>
+
+figure(1)
+plot(tred,'*')
+
+figure(2)
+for ii = 1:length(m)
+    hold on
+    plot(x,m(1,ii) + m(2,ii)*x,'r')
+end
+    %plot(x,t,'*')
+    %plot(x(sec(2:end)),t(sec(2:end)),'o','MarkerSize',10,...
+    %    'MarkerFaceColor','g','MarkerEdgeColor','k')
+hold off
+
+figure(4)
+    %plot(runmean(runmean(diff(t),1,'edge'),1,'edge'),'b*-');
+    hold on
+    plot(diff(t),'xb')
+    xlabel('X')
+    ylabel('p')
+    title('P(x), differentiated data + double running mean')
+    plot(runmean(runmean(diff(t),2,'mean'),1,'mean'),'ro:');
+    %legend('Tight mean','Raw differentiated','Broad Mean')
+    
+    
+    

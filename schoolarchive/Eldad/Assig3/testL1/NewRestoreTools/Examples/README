@@ -1,0 +1,16 @@
+
+The mfiles example_xpy.m correspond to the examples from
+the paper:
+
+  "Iterative Methods for Image Restoration:
+     A Matlab Object Oriented Approach"
+
+   by: K.P. Lee, J.G. Nagy and L. Perrone,
+
+you should first run the startup.m script in this
+directory.  To run these examples (scripts), simply
+enter the name of the file at the Matlab prompt.
+
+For more information, see:
+
+   http://www.mathcs.emory.edu/RestoreTools

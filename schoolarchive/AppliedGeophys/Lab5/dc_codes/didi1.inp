@@ -1,0 +1,9 @@
+0 30  ! niter, irest
+1  ! chifact
+C:\Documents and Settings\EOS649\My Documents\Dropbox\BensFolder\CodesData\AppliedGeophys\Lab5\dc_codes\didi1noise  ! obs file
+NULL  ! mesh
+NULL  ! topography
+0.01  ! initial model
+0.01  ! reference model
+NULL  ! alpha's
+NULL  ! w.dat

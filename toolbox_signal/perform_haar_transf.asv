@@ -1,0 +1,273 @@
+function fw = perform_haar_transf(f, Jmin, dir, options)
+
+% perform_haar_transf - peform fast Haar transform
+%
+%   y = perform_haar_transf(x, Jmin, dir);
+%
+%   Implement a Haar wavelets.
+%   Works in any dimension.
+%
+%   Copyright (c) 2008 Gabriel Peyre
+
+n = size(f,1); 
+Jmax = log2(n)-1; 
+
+if dir==1
+    %%% FORWARD %%%
+    for j=Jmax:-1:Jmin
+        sel = 1:2^(j+1);
+        a = subselect(f,sel);
+        for d=1:nb_dims(f)
+            Coarse = ( subselect(a,1:2:size(a,d),d) + subselect(a,2:2:size(a,d),d) )/sqrt(2);
+            Detail = ( subselect(a,1:2:size(a,d),d) - subselect(a,2:2:size(a,d),d) )/sqrt(2);
+            a = cat(d, Coarse, Detail );
+        end
+        f = subassign(f,sel,a);
+    end
+else
+    %%% BACKWARD %%%
+    for j=Jmin:Jmax
+        sel = 1:2^(j+1);
+        a = subselect(f,sel);
+        for d=1:nb_dims(f)
+            Detail = subselectdim(a,2^j+1:2^(j+1),d);
+            Coarse = subselectdim(a,1:2^j,d);
+            
+            Coarse = ( Coarse + Detail )/sqrt(2);
+            Detail = ( Coarse - Detail )/sqrt(2);
+
+            
+            a = cconv(upsampling(a,d),reverse(h),d) + cconv(upsampling(w,d),reverse(g),d);
+        end
+        f = subassign(f,sel,a);
+    end    
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function f = subselect(f,sel)
+switch nb_dims(f)
+    case 1
+        f = f(sel);
+    case 2
+        f = f(sel,sel);
+    case 3
+        f = f(sel,sel,sel);
+    case 4
+        f = f(sel,sel,sel,sel);
+    case 5
+        f = f(sel,sel,sel,sel,sel);
+    case 6
+        f = f(sel,sel,sel,sel,sel,sel);
+    case 7
+        f = f(sel,sel,sel,sel,sel,sel,sel);
+    case 8
+        f = f(sel,sel,sel,sel,sel,sel,sel,sel);
+    otherwise
+        error('Not implemented');
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function f = subselectdim(f,sel,d)
+switch d
+    case 1
+        f = f(sel,:,:,:,:,:,:,:);
+    case 2
+        f = f(:,sel,:,:,:,:,:,:);
+    case 3
+        f = f(:,:,sel,:,:,:,:,:);
+    case 4
+        f = f(:,:,:,sel,:,:,:,:);
+    case 5
+        f = f(:,:,:,:,sel,:,:,:);
+    case 6
+        f = f(:,:,:,:,:,sel,:,:);
+    case 7
+        f = f(:,:,:,:,:,:,sel,:);
+    case 8
+        f = f(:,:,:,:,:,:,:,sel);
+    otherwise
+        error('Not implemented');
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function f = subassign(f,sel,g)
+switch nb_dims(f)
+    case 1
+        f(sel) = g;
+    case 2
+        f(sel,sel) = g;
+    case 3
+        f(sel,sel,sel) = g;
+    case 4
+        f(sel,sel,sel,sel) = g;
+    case 5
+        f(sel,sel,sel,sel,sel) = g;
+    case 6
+        f(sel,sel,sel,sel,sel,sel) = g;
+    case 7
+        f(sel,sel,sel,sel,sel,sel,sel) = g;
+    case 8
+        f(sel,sel,sel,sel,sel,sel,sel,sel) = g;
+    otherwise
+        error('Not implemented');
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function f = subassigndim(f,sel,g,d)
+switch d
+    case 1
+        f(sel) = g;
+    case 2
+        f(sel,sel) = g;
+    case 3
+        f(sel,sel,sel) = g;
+    case 4
+        f(sel,sel,sel,sel) = g;
+    case 5
+        f(sel,sel,sel,sel,sel) = g;
+    case 6
+        f(sel,sel,sel,sel,sel,sel) = g;
+    case 7
+        f(sel,sel,sel,sel,sel,sel,sel) = g;
+    case 8
+        f(sel,sel,sel,sel,sel,sel,sel,sel) = g;
+    otherwise
+        error('Not implemented');
+end
+
+
+%%
+
+return;
+
+options.null = 0;
+
+switch nb_dims(f)
+    case 1
+        fw = perform_haar_transf_1d(f,Jmin,dir);
+    case 2
+        fw = perform_haar_transf_2d(f,Jmin,dir);
+    case 3
+        fw = perform_haar_transf_3d(f,Jmin,dir);
+    otherwise
+        error('Works only in 1D/2D/3D');
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function fw = perform_haar_transf_1d(f,Jmin,dir)
+
+f = f(:);
+n = size(f,1);
+Jmax = log2(n)-1;
+
+if dir==1
+    fw = [];
+    a = f;
+    for j=1:Jmax-Jmin+1
+        k = length(a);
+        fw = [( a(1:2:k) - a(2:2:k) )/sqrt(2); fw];
+        a = ( a(1:2:k) + a(2:2:k) )/sqrt(2);
+    end
+    fw = [a; fw];
+else
+    Fw = f;
+    f1 = Fw(1:2^Jmin); Fw(1:2^Jmin) = []; % remove low frequency
+    for j=Jmin+1:log2(n)
+        d = Fw(1:2^(j-1)); Fw(1:2^(j-1)) = [];
+        a = ( f1+d )/sqrt(2);
+        b = ( f1-d )/sqrt(2);
+        f1 = zeros(2^j,1);
+        f1(1:2:2^j) = a;
+        f1(2:2:2^j) = b;
+    end
+    fw = f1;
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function MW = perform_haar_transf_2d(M,Jmin,dir)
+
+n = size(M,1);
+
+if dir==1
+    q = n;
+    MW = M; A = M;
+    while q>2^Jmin
+        D = ( A(1:2:q,:) - A(2:2:q,:) )/sqrt(2);
+        A = ( A(1:2:q,:) + A(2:2:q,:) )/sqrt(2);
+        DD = ( D(:,1:2:q) - D(:,2:2:q) )/sqrt(2);
+        AD = ( D(:,1:2:q) + D(:,2:2:q) )/sqrt(2);
+        DA = ( A(:,1:2:q) - A(:,2:2:q) )/sqrt(2);
+        A  = ( A(:,1:2:q) + A(:,2:2:q) )/sqrt(2);
+        MW(1:q/2,1:q/2) = A;
+        MW(q/2+1:q,1:q/2) = AD;
+        MW(1:q/2,q/2+1:q) = DA;
+        MW(q/2+1:q,q/2+1:q) = DD;
+        q = q/2;
+    end
+else
+    MW = M;
+    q = 2^Jmin;
+    A = MW(1:q,1:q);
+    while q<n
+        AA = A;
+        AD = MW(q+1:2*q,1:q);
+        DA = MW(1:q,q+1:2*q);
+        DD = MW(q+1:2*q,q+1:2*q);
+        D = zeros(q,2*q);
+        D(:,1:2:2*q) = (AD + DD)/sqrt(2);
+        D(:,2:2:2*q) = (AD - DD)/sqrt(2);
+        A = zeros(q,2*q);
+        A(:,1:2:2*q) = (AA + DA)/sqrt(2);
+        A(:,2:2:2*q) = (AA - DA)/sqrt(2);
+        M1 = zeros(2*q,2*q);
+        M1(1:2:2*q,:) = (A+D)/sqrt(2);
+        M1(2:2:2*q,:) = (A-D)/sqrt(2);
+        q = 2*q;
+        A = M1;
+    end
+    MW = M1;
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function fw = perform_haar_transf_3d(f,Jmin,dir)
+n = size(f,1);
+%% 3D Haar transform
+if dir==1
+    fw = f;
+    for j=1:log2(n)
+        p = n/2^(j-1);
+        sel = 1:p;
+        % average/difference along X
+        fw(sel,sel,sel) = cat3(1, (fw(1:2:p,sel,sel)+fw(2:2:p,sel,sel))/sqrt(2), (fw(1:2:p,sel,sel)-fw(2:2:p,sel,sel))/sqrt(2) );
+        % average/difference along Y
+        fw(sel,sel,sel) = cat3(2, (fw(sel,1:2:p,sel)+fw(sel,2:2:p,sel))/sqrt(2), (fw(sel,1:2:p,sel)-fw(sel,2:2:p,sel))/sqrt(2) );
+        % average/difference along Z
+        fw(sel,sel,sel) = cat3(3, (fw(sel,sel,1:2:p)+fw(sel,sel,2:2:p))/sqrt(2), (fw(sel,sel,1:2:p)-fw(sel,sel,2:2:p))/sqrt(2) );
+    end
+else
+    fw = f;
+    for j=log2(n):-1:1
+        p = n/2^(j);
+        sel = 1:p;
+        sel1 = 1:2*p;
+        selw = p+1:2*p;
+        % average/difference along X
+        A = fw(sel,  sel1, sel1);
+        D = fw(selw, sel1, sel1);
+        fw(1:2:2*p,sel1,sel1) = (A+D)/sqrt(2);
+        fw(2:2:2*p,sel1,sel1) = (A-D)/sqrt(2);
+        % average/difference along Y
+        A = fw(sel1, sel,  sel1);
+        D = fw(sel1, selw, sel1);
+        fw(sel1,1:2:2*p,sel1) = (A+D)/sqrt(2);
+        fw(sel1,2:2:2*p,sel1) = (A-D)/sqrt(2);
+        % average/difference along Z
+        A = fw(sel1, sel1, sel);
+        D = fw(sel1, sel1, selw);
+        fw(sel1,sel1,1:2:2*p) = (A+D)/sqrt(2);
+        fw(sel1,sel1,2:2:2*p) = (A-D)/sqrt(2);
+    end
+
+end

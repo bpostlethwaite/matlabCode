@@ -1,0 +1,26 @@
+clear all
+
+
+yrmin=1800; yrmax=2150; npoints=500;
+yr=linspace(yrmin,yrmax,npoints);
+interval=yrmax-yrmin;
+time=linspace(0,interval,npoints);
+
+y=(sin(time/12)+1)/2;
+
+plot(yr,y);
+
+
+ft = linspace(0,5,25); % Generate t for f
+f = ft.^2 - ft - 3; % Generate f(t)
+gt = linspace(1,6,25); % Generate t for g
+g = 3*sin(gt).*cos(gt); % Generate g(t)
+yr=yr';
+f = interp1(ft,f,ft); % Interpolate the data set (ft,f) at time t
+g = interp1(gt,g,ft,'spline'); % Interpolate the data set (gt,g) at time t
+
+
+modt = linspace(0,interval,npoints)';
+mod  = ((sin(modt)+1)/2)';
+
+m = interp1q(modt,mod,yr);

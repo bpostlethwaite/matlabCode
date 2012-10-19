@@ -1,0 +1,9 @@
+0 30  ! niter, irest
+1  ! chifact
+Z:\Applied Geophys\Lab5\dc_codes\didiA1  ! obs file
+NULL  ! mesh
+NULL  ! topography
+0.01  ! initial model
+0.01  ! reference model
+NULL  ! alpha's
+NULL  ! w.dat

@@ -1,0 +1,38 @@
+clear all
+close all
+t = 0:0.025:10-0.025;
+omega = 2*pi;
+beta = [3900,4490];
+theta = 0:5:85;
+p = sind(theta)/beta(1);
+rho  = [2900,3380];
+N = length(t);
+ff = [0:N/2,-N/2+1:-1]/(N*0.025);
+
+
+ft = (1-omega^2.*(t-5).^2/2).*exp(-omega^2.*(t-5).^2/4);
+
+cos2 = sqrt(1-p.^2*beta(2)^2);
+
+for ii = 1:length(theta)
+top    = (rho(1)*beta*cosd(theta(ii)) - rho(2)*beta(2)*cos2(ii));
+bottom = (rho(1)*beta*cosd(theta(ii)) + rho(2)*beta(2)*cos2(ii));
+SS(ii) = top/bottom;
+end
+
+for ii = 1:13
+ftC(ii,:) = SS(ii) .* ft;
+end
+plot(t,ftC)
+xlim([3,7])
+
+FT = fft(ft);
+for ii = 14 : length(SS)
+FTC(ii,1:N/2) = FT * (SS(ii);
+FTC(ii,N/2:length(FT)) = FT * conj((SS(ii));
+ftC(ii,) = ifft(FTC(ii,:));
+end
+
+
+plot(t,ftC(14:18,:))
+%legend(num2str(theta))
