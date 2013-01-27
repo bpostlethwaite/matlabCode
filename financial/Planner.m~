@@ -1,0 +1,104 @@
+% For tax rates see 
+% http://www.cra-arc.gc.ca/tx/ndvdls/fq/txrts-eng.html
+% Say interest in savings is paid monthly, accumulative.
+
+% Money into an RRSP is tax deductable. Into a TFSA is not.
+
+% Program: 1st do: Taxes on Income
+% Income to Savings (monthly (percentage vs lump sum):
+% Income back on RRSP contributions
+% What to do with RRSP tax return?
+% Monthly interest on Savings (non taxable)
+% Year end total.
+clear all
+%close all
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Initial Conditions
+
+RRSPinitial  = 1000;
+TFSAinitial = 500;
+yrSavings(:,1) = [RRSPinitial ; TFSAinitial];
+
+% Interest Paid on savings
+Rint = 0.05;
+Tint = 0.07;
+
+% For monthly interest
+Rint = Rint/12;
+Tint = Tint/12;
+
+saverate    = [0.2 ; 0.15]; % Monthly percentage Save Rate
+
+% Number of years to calculate
+n = 30;
+year = 1:n;
+
+% Bens Income
+Bincome    = linspace(20000,90000,n);
+%Bincome(1:2) = 25000;
+% Laura Income
+Lincome = linspace(20000,80000,n);
+Lincome(3
+
+Expend = zeros(n,1);
+%Expend(5)  = 14000;
+%Expend(10) = 10000;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+for jj = 1:n
+
+  income(:,jj)   = incometax([Bincome(jj) , Lincome(jj)]);
+  incomeDis(:,jj)  = income(:,jj).*(1-saverate);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SAVINGS
+
+% Gross save rate
+
+monthlysave(jj) = sum(income(:,jj) .* saverate ./ 12);
+
+% Save rates divided between RRSP and TFSA
+
+TFSA        = TFSAinitial;
+TFSAcont(jj)    = 5000/12;
+RRSPcont(jj)    = monthlysave(jj) - TFSAcont(jj);
+RRSP        = RRSPinitial;
+
+for ii = 1:12
+accruedR = Rint*RRSP;
+RRSP     = RRSP + accruedR +RRSPcont(jj);
+accruedT = Tint*TFSA;
+TFSA     = TFSA + accruedT + TFSAcont(jj);
+end    
+
+TFSA = TFSA - Expend(jj);
+yrSavings(:,jj) = [RRSP ; TFSA];
+
+RRSPinitial = RRSP;
+TFSAinitial = TFSA;
+
+
+end
+
+figure(1)
+plot(year,yrSavings./1000,'-')
+legend('RRSP','TFSA','Location','Best')
+title('Yearly Total Investments')
+xlabel('Year')
+ylabel('1000''s Dollars')
+
+
+figure(2)
+plot(year,income./1000,year,incomeDis./1000,'--')
+legend('Ben Income','Laura Income','Ben Disposable Income',...
+    'Laura Disposable Income','Location','Best')
+title('Income and Disposable Income')
+xlabel('Year')
+ylabel('Dollars 1000''s $')
+
+figure(3)
+plot(year,monthlysave,year,TFSAcont,year,RRSPcont)
+legend('total monthy save','TFSA contribution','RRSP contribution','Location','Best')
+title('Monthly contributions per annum')
+xlabel('Year')
+ylabel('Dollars $')

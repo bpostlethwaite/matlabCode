@@ -1,0 +1,25 @@
+function [G] = getG(x,y,z,x0,y0,dx,dy,dz)
+
+h = dx*dy*dz;
+%G = zeros(length(x)+length(y)+length(z),length(x0)+length(y0));
+
+for kk = 1:length(y0)
+for mm = 1:length(x0)   
+
+
+G(:,kk) = (z(1)*h^3)/((x(:)-ob(kk)).^2 + (y(1) - ob(kk))^2 + z(1)^2).^(3/2);
+
+        for jj = 1:length(z)
+                for ii = 1:length(y)
+                   
+                        G(:,kk) = [G(:,kk);(z(jj)*h^3)/((x(qq)-x0(kk)).^2 + (y(ii) - y0(mm))^2 + z(jj)^2).^(3/2)];
+            
+                    
+                end
+        end
+       
+        
+        
+end
+end
+end

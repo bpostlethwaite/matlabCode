@@ -1,0 +1,19 @@
+clear all
+close all
+t = linspace(0,20,1000);
+dt = t(2) - t(1);
+f = 1; b = 3/20;
+A = sin(pi.*t/20).^2;
+A1 = sin(pi*t(1:t==2)
+vib = A.*sin(2*pi.*(f + b*t).*t);
+
+vibf     = fft(vib);
+autovibf = vibf.*conj(vibf);
+autovib  = ifft((autovibf));
+
+figure(1)
+subplot(2,1,1)    
+    plot(t,vib)
+subplot(2,1,2)
+    plot(t,autovib)
+    xlim([0,2])

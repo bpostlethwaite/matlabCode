@@ -1,0 +1,26 @@
+function [roots,iter] = secant(func,a,b,nprobe,tol,maxiter)
+% SECANT uses the secant method to find the roots of function func
+% Finds along interval a,b probed initially for changes in sign nprobe
+% times and roots are found to within tolerance tol. Number of iterations
+% is also returned
+
+subi = signprobe(func,a,b,nprobe);
+
+for jj = 1:length(subi)
+    x = subi(:,jj);
+    iter = 1;
+    while (abs(func(x(end)))) > tol && (abs(x(end)-x(end-1)) > tol*(1+abs(x(end-1))));
+        x(end+1) = x(end) - func(x(end))*(x(end)-x(end-1)) / (func(x(end))-f(x(end-1)));
+        if (abs(x(end)) >= 0.5*abs(x(end-1))) % || (iter > maxiter)
+            x = signprobe(func,subi(1,jj),subi(2,jj),3); % If change in x is small,
+            % ie. if we are in a 'flat' interval of function, reduce the
+            % interval around the sign change and restart Newtons method
+        end
+        if (iter > maxiter) % Break out of while loop if we breach max iter
+            x = 'MaxIter Reached';
+            break
+        end
+        iter = iter + 1;
+    end
+    roots{jj} = x(end);
+end

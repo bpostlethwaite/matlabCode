@@ -1,0 +1,332 @@
+%3D Poisson Driver
+clear all
+close all
+
+%% Set constants
+nnn = 4:2:26;
+nnn = 10;
+for qq = 1; %1:length(nnn)
+nn =  nnn(qq);
+L = 1;
+
+n1 = nn; % Number of cells in x1 direction
+n2 = nn; % Number of cells in x2 direction
+n3 = nn; % Number of cells in x3 direction
+
+h1 = L/n1; % cell length in x1 direction
+h2 = L/n2;
+h3 = L/n3;
+
+Lx1 = n1*h1;
+Lx2 = n2*h2;
+Lx3 = n3*h3;
+
+%% Set up cells, mesh, Operators %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MESH
+[x,y,z] = ndgrid(0:h1:Lx1,0:h2:Lx2,0:h3:Lx3); % Cell nodes
+[xc,yc,zc] = ndgrid(h1/2:h1:Lx1-h1/2, h2/2:h2:Lx2-h2/2, h3/2:h3:Lx3-h3/2); % Cell centres
+[xdx,ydx,zdx] = ndgrid(0:h1:Lx1, h2/2:h2:Lx2-h2/2, h3/2:h3:Lx3-h3/2); %Staggered in x1 cell wall x2 x3
+[xdy,ydy,zdy] = ndgrid(h1/2:h1:Lx1-h1/2, 0:h2:Lx2, h3/2:h3:Lx3-h3/2); %Staggered in x2 cell wall x1 x3
+[xdz,ydz,zdz] = ndgrid(h1/2:h1:Lx1-h1/2, h2/2:h2:Lx2-h2/2, 0:h3:Lx3); %Staggered in x3 cell wall x1 x2
+
+%%%%%%%%%%%%%%%%%% OPERATORS
+% derivatives on walls (going from centre to nodes) <GRAD>
+ddxn = @(m,k) 1/k*spdiags([-ones(m+1,1) ones(m+1,1)],[-1,0],m+1,m); 
+% derivative function (calculating from nodes to centre) <DIV>
+ddxc = @(m,k) 1/k*spdiags([-ones(m+1,1) ones(m+1,1)],[0,1],m,m+1); 
+% Average function (Go from centres to walls (will also need ghost))
+av = @(m) 0.5*spdiags([ones(m,1) ones(m,1)],[-1,0],m+1,m);
+av2 =  @(m) spdiags([ones(m,1) ones(m,1)],[0,1],m,m+1);
+%%%%%%% 
+
+I1   = speye(n1);     % Create Identities of Appropriate size
+I2   = speye(n2);     % Create Identities of Appropriate size
+I3   = speye(n3);     % Create Identities of Appropriate size 
+
+Dn1  = ddxn(n1,h1);  % Create 1D Operators 
+Dn2  = ddxn(n2,h2);  % Create 1D Operators 
+Dn3  = ddxn(n3,h3);  % Create 1D Operators 
+
+Gn1  = ddxn(n1,h1);  % Create 1D Operators 
+Gn2  = ddxn(n2,h2);  % Create 1D Operators 
+Gn3  = ddxn(n3,h3);  % Create 1D Operators 
+
+Dn1([1,end]) = [2/h1; -2/h1];
+Dn2([1,end]) = [2/h2; -2/h2]; % Hardwire in the 0 gradient
+Dn3([1,end]) = [2/h3; -2/h3];
+
+Gn1([1,end]) = [0; 0];
+Gn2([1,end]) = [0; 0]; % Hardwire in the 0 gradient
+Gn3([1,end]) = [0; 0];
+
+Dc1  = ddxc(n1,h1);  % Create 1D Operators 
+Dc2  = ddxc(n2,h2);  % Create 1D Operators 
+Dc3  = ddxc(n3,h3);  % Create 1D Operators 
+
+Av1  = av(n1);
+Av2  = av(n2);
+Av3  = av(n3);
+
+Av21  = av2(n1);
+Av22  = av2(n2);
+Av23  = av2(n3);
+
+Av1([1,end]) = [1,1];
+Av2([1,end]) = [1,1];
+Av3([1,end]) = [1,1];
+
+%%% Ramp up to 2D then to 3D
+%% 3D
+DN1 = kron(I3,kron(I2,Dn1));
+DN2 = kron(I3,kron(Dn2,I1));
+DN3 = kron(Dn3,kron(I2,I1));
+
+GN1 = kron(I3,kron(I2,Gn1));
+GN2 = kron(I3,kron(Gn2,I1));
+GN3 = kron(Gn3,kron(I2,I1));
+
+DC1 = kron(I3,kron(I2,Dc1));
+DC2 = kron(I3,kron(Dc2,I1));
+DC3 = kron(Dc3,kron(I2,I1));
+
+A1 = kron(I3,kron(I2,Av1));
+A2 = kron(I3,kron(Av2,I1));
+A3 = kron(Av3,kron(I2,I1));
+
+A21 = kron(I3,kron(I2,Av21));
+A22 = kron(I3,kron(Av22,I1));
+A23 = kron(Av23,kron(I2,I1));
+
+AV = [A1;A2;A3];
+AV2 = [A21,A22,A23];
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+D  = [DC1,DC2,DC3];
+G  = [DN1;DN2;DN3];
+G2 = [GN1;GN2;GN3];
+
+%uA = sin(pi*xc).*sin(pi*yc).*sin(pi*zc);
+%q = -3*pi^2*uA;
+
+Q = speye(n1*n2);
+k = zeros(1,n3); k(1) = 1;
+Q = kron(k,Q);
+
+q = zeros(size(xc));
+q(2,2,1) = -1/(h1*h2*h3); q(end - 1, end - 1 , 1) = -1/(h1*h2*h3);
+q(end - 1,2,1) = 1/(h1*h2*h3); q(2, end - 1 , 1) = 1/(h1*h2*h3);
+q = q(:);
+m = ones(size(xc));
+mref = m(:);
+hr = round(nn/2);
+m(hr - 1 : hr + 1 ,hr - 1 : hr + 1 , 1:2 ) = 4;
+%m = cos(2*pi*xc).*cos(2*pi*yc).*cos(2*pi*zc);
+m  = m(:);
+e  = ones(n1*n2*n3,1);
+h = h1*h2*h3;
+iter = 1;
+mit = mref;
+
+
+dCdu    = @(u,m)(D*DiagAvgM(m,A1,A2,A3)*G);
+dCdm    = @(u,m)(D*diag(G*u)*DiagAvgM(m,A1,A2,A3).^2*AV*diag(1./m.^2));
+Um      = @(m,q,A1,A2,A3)( (D*DiagAvgM(m,A1,A2,A3)*G)\q);
+Rm      = @(m,e,h)( 1/2 * h * e' * AV2 * ((G2*m).^2));
+gradRm  = @(m,e,h)(G2' * spdiags( (AV2' * h * e),0,size(G2,1),size(G2,1)) * G2 *m);
+grad2Rm = @(h,e)(G2' * spdiags( (AV2' * h * e),0,size(G2,1),size(G2,1)) * G2);
+J       = @(u,m,Q) (-Q * (dCdu(u(:),m)\dCdm(u(:),m)) );
+
+%res(qq) = 3/2 * pi^2 - Rm(m,e,h);
+
+
+d = Um(m,q,A1,A2,A3);
+d = Q*d;
+figure(123)
+    imagesc(reshape(d,n1,n2))
+
+Sg = std(0.01 * norm(d(:)) * randn(length(d(:)),1));
+d = d(:) + Sg * randn(length(d(:)),1);
+%d = d(:);
+
+%%  INVERSION
+
+% Alpha Find and Tikhonov Curve
+%
+Chi = Sg^2 * nn^2;
+
+alpha = logspace(-6,6,10);
+
+%{
+%while  A > Sg + Sg*tol || A < Sg - Sg*tol
+for ii = 1:length(alpha)    
+    mit = mref;
+    iter = 1;
+    fprintf('ITERATION NUMBER %i\n',ii)
+    while  iter <= 4
+        
+        u = Um(mit,q,A1,A2,A3);
+        Y = J(u,mit,Q)' * (Q * Um(mit,q,A1,A2,A3) - d) + alpha(ii) * gradRm(mit - mref,e,h);
+        H = J(u,mit,Q)' * J(u,mit,Q) + alpha(ii)*grad2Rm(h,e);
+        s = -H\Y;
+        mit = mit + s;
+        iter = iter + 1;
+        fprintf('norm of s is %f\n',norm(s))
+    end
+    
+    phiD(ii) = ( (Q * Um(mit,q,A1,A2,A3) - d)' * (Q * Um(mit,q,A1,A2,A3) - d) );
+    phiM(ii) = Rm(mit,e,h);
+    
+    
+    
+end
+%%
+figure(343)
+    plot(phiM,phiD)
+    line([min(phiM) max(phiM)],[Chi Chi],'Color',[.9 .1 .5])
+    xlabel('Regularization')
+    ylabel('Data Misfit')
+    title('Tikhonov Curve')
+
+crossover = phiD < Chi;
+for ii = 2:length(crossover)
+    if crossover(ii) == crossover(ii-1)
+        continue
+    else
+        alpha = alpha(ii);
+        break
+    end
+end
+
+
+  
+
+%}
+%% WITH CHOSEN ALPHA VALUE DO:
+%alpha = 2.42;
+alpha = 1e-6;
+%
+iter = 1;
+mit = mref;
+
+while  iter <= 12
+    
+        fprintf('Gauss Newton Step %i\n',iter)
+        u = Um(mit,q,A1,A2,A3);
+        Y = J(u,mit,Q)' * (Q * Um(mit,q,A1,A2,A3) - d) + alpha * gradRm(mit - mref,e,h);
+        H = J(u,mit,Q)' * J(u,mit,Q) + alpha*grad2Rm(h,e);
+        s = -H\Y;
+        mit = mit + s;
+        iter = iter + 1;
+        fprintf('norm of s is %f\n',norm(s))
+        
+end
+%}
+
+end
+
+figure(153)
+    imagesc(reshape(Q*u,n1,n2))
+
+%}
+m = reshape(m,n1,n2,n3) + 0.01*randn(n1,n2,n3);
+mInv = reshape(mit,n1,n2,n3);
+
+%% Plot
+%semilogy(nnn,res,nnn,1./nnn.^2)
+
+
+a = squeeze(xc(:,1,1));
+
+
+%{
+for ii = 1:2
+    if ii == 1
+        Vv = reshape(model,n1,n2,n3);
+    else
+        Vv = reshape(inversion,n1,n2,n3);
+    end
+figure(3)
+    for jj = 1:length(a)
+    xslice = [ a(jj), a(end) ];
+    yslice = [ a(end) ];
+    zslice = [ a(1)];
+    slice(X,Y,Z,Vv,xslice,yslice,zslice)
+    colorbar;
+    xlabel('x axis')
+    ylabel('y axis')
+    zlabel('z axis')
+    pause(1)
+    end
+end
+%}
+%{
+figure(34)
+subplot(2,2,1)
+imagesc(squeeze(model(1,:,:)))
+title('Surface')
+subplot(2,2,2)
+imagesc(squeeze(model(:,:,hr)))
+title('X Y plane, half way back')
+colorbar
+subplot(2,2,3)
+imagesc(squeeze(model(:,hr,:)))
+title('X Z plane half way back')
+subplot(2,2,4)
+imagesc(squeeze(model(hr,:,:)))
+title('Y Z plane half way down')
+colorbar
+
+figure(342)
+subplot(2,2,1)
+imagesc(squeeze(inversion(1,:,:)))
+title('Surface')
+colorbar
+subplot(2,2,2)
+imagesc(squeeze(inversion(:,:,hr)))
+title('X Y plane, half way back')
+colorbar
+subplot(2,2,3)
+imagesc(squeeze(inversion(:,hr,:)))
+title('X Z plane half way back')
+subplot(2,2,4)
+imagesc(squeeze(inversion(hr,:,:)))
+title('Y Z plane half way down')
+colorbar
+%}
+%
+figure(231);
+for ii = 1:nn
+ subP = subplot(3,3,ii);
+        %contourf(m(:,:,ii))
+        imagesc(m(:,:,ii))
+        title(sprintf('Depth z = %d',(ii-1)))
+        caxis([min(min(min(m))) max(max(max(m)))])
+        pos=get(subP, 'Position'); 
+        set(subP, 'Position', [pos(1)+0.05 pos(2) pos(3) pos(4)]) 
+        %cax = caxis; %Turn on for absolute color cross over between fig 1
+        %and fig 2 (need to turn on corrisponding caxis in fig 2)
+end
+%rect = [left, bottom, width, height]
+
+B=colorbar ('FontSize',12);
+        set(B, 'Position', [.0314 .11 .0581 .8150]) 
+         ylabel(B,'Gravity Anomaly [dimensionless]')
+ 
+    
+         
+figure(242)
+for ii = 1:nn
+subP = subplot(3,3,ii);
+        %contourf(mInv(:,:,ii))
+        imagesc(mInv(:,:,ii))
+        title(sprintf('Depth z = %d',(ii-1)*10))
+        caxis([min(min(min(mInv))) max(max(max(mInv)))])
+         pos=get(subP, 'Position'); 
+        set(subP, 'Position', [pos(1)+0.05 pos(2) pos(3) pos(4)]) 
+        %caxis(cax)  %Turn on for absolute color cross over between fig 1
+        %and fig 2
+end
+B=colorbar ('FontSize',12);
+        set(B, 'Position', [.0314 .11 .0581 .8150]) 
+         ylabel(B,'Gravity Anomaly [dimensionless]')
+%}

@@ -1,0 +1,32 @@
+% Sound Gen
+
+dw   = 0.02;
+w    = 066.16;
+w1   = w - dw*w;
+w2   = w + dw*w;
+tmax = 1;
+t = [0:0.000125:tmax];
+v = sin(2*pi*w1*t) + sin(2*pi*w2*t) + sin(2*pi*10*w*t).*exp(-0.5*t);
+
+wavwrite(v, 'asharp.wav');
+
+
+f = sin(2*pi*174.61*t);
+g = sin(2*pi*195.99*t);
+a = sin(2*pi*220*t);
+b = sin(2*pi*246.94*t);
+c = sin(2*pi*246.94*t);
+b = sin(2*pi*246.94*t);
+b = sin(2*pi*246.94*t);
+ 
+%Now to create a line of music use the following command:
+ 
+line1 = [a,b,g,a,g,f];
+line2 = [a,b,a,b,a,b];
+ 
+%The letters should represent the notes that you have created in MatLab.  Put the notes in the order you want them to play.
+%To create your song use:
+ 
+song = [line1 + line2];
+
+wavwrite(song, 'mysong.wav')

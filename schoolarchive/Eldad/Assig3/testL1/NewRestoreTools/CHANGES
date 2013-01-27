@@ -1,0 +1,51 @@
+
+* 5/25/02, J. Nagy
+  1. Added Lisa's codes (with some slight cosmetic modifications)
+     to do Kronecker product approximations for reflexive boundary
+     conditions.  This includes:
+     (a) Modified Classes/@psfMatrix/kronApprox.m to look for
+         zero, reflexive or neumann boundary conditions.
+     (b) Added the following functions to Classes/@psfMatrix/private/
+         * zeroKronApprox.m (this replaces zeroSepApprox.m)
+         * reflexKronApprox.m
+         * buildHank.m
+  2. Fixed some problems with TSVD.m and GCVforTSVD.m
+
+* 6/02/02, J. Nagy
+  1. Added new class, transformMatrix, to be used for direct
+     methods.
+  2. Modifed Classes/@psfMatrix/svd.m to compute "SVD" for 
+     various boundary conditions.  The following new functions
+     were added to Classes/@psfMatrix/private/
+       kron_svd.m (for zero boundary conditions, and reflexive boundary
+                   conditions with nonsymmetric PSF)
+       fft_svd.m  (for periodic boundary conditions)
+       dct_svd.m  (for reflexive boundary conditions with symmetric PSF)
+  3. Modified TSVD so that it will work for various boundar conditions.
+
+* 6/6/02, J. Nagy
+  1. Added function DirectMethods/Tikhonov.m 
+     (Replaces DirectMethods TLS.m from version 1.0)
+     Tikhonov should now work for various boundary conditions, and
+     in some cases the derivative regularization operator can be used.
+     Also had to modify DirectMethods/GCVfun.m and givensDLS.m
+
+* 10/10/02, J. Nagy
+  1. Fixed a small bug in Classes/@psf/size.m
+
+* 11/12/02, J. Nagy
+  1. Fixed bug in Classes/@psfMatrix/private/issymmetric.m
+
+* 11/17/02, J. Nagy
+  1. Fixed bug in Classes/@psfMatrix/private/reflexKronApprox.m
+  2. Fixed bug in Classes/@psfMatrix/private/zeroKronApprox.m
+
+* 11/20/06, J. Nagy
+  1. Added new iterative codes, HyBR, written by Julianne Chung.
+     These are for testing purposes only -- some modifications will
+     be needed.
+  2. Added new "new_svdPrec" that seems to work better than psfPrec
+  3. Some additional cosmetic changes and a few minor bugs have been
+     fixed.
+  4. Kronecker product codes have been updated using those developed
+     from Lisa Perrone's thesis work.

@@ -1,0 +1,14 @@
+% Play with matrices
+
+%{
+G = randn(5,5);
+B = orth(G);
+subplot(1,2,1)
+imagesc(G)
+subplot(1,2,2)
+imagesc(B)
+%}
+
+S = zeros(20,60)
+
+S(2:4,:) = 1;

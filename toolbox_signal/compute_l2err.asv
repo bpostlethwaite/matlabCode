@@ -1,0 +1,19 @@
+function err = compute_l2err(MF,donormalize)
+
+% compute_l2err - 
+%
+% err(m) is the square L2 non linear
+% approximation error
+
+if nargin<2
+    donormalize = 0;
+end
+
+v = sort(abs(MF(:)).^2);
+if v(n^2)<v(1)
+    v = reverse(v); % be sure it is in reverse order
+end
+err = reverse( cumsum(v) ); 
+if donormalize
+    err = err/err(1);
+end

@@ -1,0 +1,34 @@
+This directory contains a variety of test data.  Notation
+is as follows:
+
+  x_true : denotes the true image, if it is known.
+  PSF    : image of the point spread function.  If spatially variant blur,
+           then this is a cell array containing several PSFs.
+  b      : blurred and noisy image.
+  b_true : noise free blurred image, if it is known.
+
+Following is some specific information about the data files:
+
+  * Text.mat
+    Contains data of some text.  The true image is in Matlab's image
+    processing toolbox.  The PSF was generated using psfGauss.m,
+    and is therefore a separable Gaussian blur.  This means one can
+    use direct methods such as TSVD to restore the image.
+
+  * satellite.mat
+    This is the famous satellite data used as test data by many
+    researchers in image processing.  The data came originally from the
+    Air Force Research Laboratory as part of a simulation study of
+    numerical methods for post processing images taken through atmospheric
+    turbulence. The true image is known.
+
+  * star_cluster.mat 
+    This is data comes from the original Hubble Space Telescope; see
+    http://www.stsci.edu/resources/  for more information and other data.
+    The data is not ill-conditioned, but it is a good example of a 
+    spatially variant blur.  One can use 1, 4, or 25 PSFs to restore
+    the image.  The true image is known.
+
+  * psfGauss.m
+    The function psfGauss.m can be used to create a Gaussian PSF.
+    Use "help psfGauss" for more information.

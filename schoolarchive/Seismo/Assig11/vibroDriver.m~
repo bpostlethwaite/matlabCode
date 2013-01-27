@@ -1,0 +1,31 @@
+clear all
+close all
+
+t = 0:0.01:20;
+f = 1; b = 3/40;
+A(1,:) = sin(pi.*t/20).^2;
+A(2,:) = [sin(pi*t(t<=2)/4).^2, ones(1,length(t(t>2 & t<18))), sin(pi*(t(t>=18)-20)/4).^2];
+for ii = 1:2
+vib = A(ii,:).*sin(2*pi.*(f + b*t).*t);
+vib = [vib,zeros(1,length(vib)+1)];
+newt= linspace(0,40,length(vib));
+
+vibf     = fft(vib);
+autovibf = vibf.*conj(vibf);
+autovib  = fftshift(ifft((autovibf)));
+
+doubleautof = autovibf.*conj(autovibf);
+doubleauto = fftshift(ifft(doubleautof));
+
+figure(ii)
+subplot(3,1,1)    
+    plot(newt,vib)
+        xlabel('time [s]')
+        ylabel(
+subplot(3,1,2)
+    plot(newt,(autovib))
+    xlim([18,22])
+subplot(3,1,3)
+    plot(newt,doubleauto)
+    xlim([18,22])
+end    

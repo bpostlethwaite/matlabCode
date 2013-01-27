@@ -1,0 +1,77 @@
+%ellipse_profile.m finds normal profiles to an ellipse and plots the
+%results
+close all
+clear all
+%%
+load l90_200.br; % Loads data
+load('BenColormaps','ellipsecolor'); %Load colormap
+magdata=reshape(l90_200,361,181); % Reshapes data
+magdata=flipud(magdata'); % Reshape data
+lon=0:1:360;
+lat=-90:1:90;
+% [Plg,Plt]=meshgrid(lon,lat);            %need grids of lat lon to make the map
+
+%% Main Ellipse control
+
+semimajor = 0.5*10600;
+semiminor =  0.5*8500;
+lat0 = 67; % Centre lat
+lon0 = 208; %Centre Lon
+offset = 90; % Degrees of Offset for ellipse
+ecc = axes2ecc(semimajor,semiminor);  %computes eccentricity large ellipse
+mainellipse = [semimajor,ecc];   % Defining parameters for main ellipse 
+units = 'degrees'; % Some necessary parameter, might change when I find out what it does
+
+%% Ellipsoid body on which we will plot our ellipse
+mars_radius = 3396.2;
+mars_eccentricity = 0.00589;
+planet = [pi*mars_radius,mars_eccentricity];
+
+%% Compute lon & lat of ellipse
+[reflat,reflon] = ellipse1(lat0,lon0,mainellipse,offset,[],planet); %Large ellipse lat and lon
+
+%% Distance Minimization
+
+minorellipse = [0.5*semimajor,ecc]; %Second ellipse for computing normals
+num_pts(1)=20;  % number pf points in outer ellipse
+num_pts(2) = 9; % number of points in inner ellipse
+az2 = [0:10:350;2:10:352]'; % Small inner angle (For track spacing)
+az1 = [az2(:,1)-8,az2(:,2)+8]; % Larger Outer angle (For track spacing)
+
+rng = -30;  % Degree range for the profile tracks
+[prof_lat prof_lon] = getprofiles(lat0,lon0,mainellipse,minorellipse,offset,az1,az2,planet,units,num_pts,rng);
+
+
+%% MESH AND GRID
+topoR = makerefmat('RasterSize', size(magdata), ... % Make a graticule mesh
+   'Latlim', [-90 90], 'Lonlim', [0 360]);  % I really don't know what this does yet
+spacing = [180 360]; % Set spacing for graticule (should be around data grid size)
+
+%% Figure 1, the square data
+figure(1)
+imagesc(lon,lat,magdata); set (gca,'ydir','normal'); title('Langlais l90/h200'); colorbar
+colormap(ellipsecolor)
+
+%% Figure 2, Globe projection
+figure(2)
+
+axesm('globe','Origin',[20 67])
+view(20,70)
+% Display data mapped to the graticule
+h = meshm(magdata,topoR,spacing);
+colormap(ellipsecolor)
+hold on
+plotm(reflat,reflon)
+plotm(prof_lat,prof_lon)
+
+
+%% Figure 3
+figure(3)
+axesm ('eqdazim', 'Frame', 'on', 'Grid', 'on','Origin',[lat0 lon0],'MeridianLabel','on','MLabelParallel','equator','ParallelLabel','on','PLabelMeridian','prime');
+plotm(reflat,reflon)
+hold on
+plotm(prof_lat,prof_lon)
+title('Profiles plotted at 10 degrees, projected equidistant azimuthal')
+
+
+

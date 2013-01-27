@@ -1,0 +1,259 @@
+  Starting dcinv2d with the following parameters:
+                Input file: C:\Documents and Settings\EOS649\My Documents\Dropbox\BensFolder\CodesData\AppliedGeophys\Lab5\dc_codes\didi1.inp
+ Max. number of iterations:  30
+                   Chifact: 1
+         Observations file: C:\Documents and Settings\EOS649\My Documents\Dropbox\BensFolder\CodesData\AppliedGeophys\Lab5\dc_codes\didi1noise
+                      Mesh: NULL
+                Topography: NULL
+             Initial Model: 0.01
+           Reference Model: 0.01
+                   Alpha's: NULL
+               Weight file: NULL
+ 
+ Station Locations:
+      0.00      0.00
+     15.00      0.00
+     30.00      0.00
+     45.00      0.00
+     60.00      0.00
+     75.00      0.00
+     90.00      0.00
+    105.00      0.00
+    120.00      0.00
+    135.00      0.00
+    150.00      0.00
+    165.00      0.00
+    180.00      0.00
+    195.00      0.00
+ 
+
+  Using default (alphas,alphax,alphaz) = ( 0.56250E-03, 1.0, 1.0)
+
+          cpu time:   0:00:00
+ 
+
+Iteration    1
+
+  number of basis vectors :  25
+
+  ridge regression curve:
+     ridge        misfit
+  0.858183E+04  0.267780E+04
+  0.124993E+05  0.313682E+04
+  0.249985E+05  0.398375E+04
+
+      chosen ridge=   9.93059E+03
+     target misfit=   2.84742E+03
+   achieved misfit=   2.85241E+03
+        model norm=   1.21342E-01
+     misfit change=   4.99124E-01
+       norm change=   0.00000E+00
+
+       norm comp 1=   6.51193E-02
+       norm comp 2=   2.74434E-02
+       norm comp 3=   2.87805E-02
+
+          cpu time:   0:00:00
+ 
+
+Iteration    2
+
+  number of basis vectors :  25
+
+  ridge regression curve:
+     ridge        misfit
+  0.248265E+04  0.141730E+04
+  0.496529E+04  0.203595E+04
+
+      chosen ridge=   2.51259E+03
+     target misfit=   1.42621E+03
+   achieved misfit=   1.42577E+03
+        model norm=   4.53549E-01
+     misfit change=   5.00151E-01
+       norm change=   2.73777E+00
+
+       norm comp 1=   2.31566E-01
+       norm comp 2=   1.20150E-01
+       norm comp 3=   1.01837E-01
+
+          cpu time:   0:00:00
+ 
+
+Iteration    3
+
+  number of basis vectors :  25
+
+  ridge regression curve:
+     ridge        misfit
+  0.554401E+03  0.684998E+03
+  0.628148E+03  0.722409E+03
+  0.125630E+04  0.985896E+03
+
+      chosen ridge=   6.08875E+02
+     target misfit=   7.12887E+02
+   achieved misfit=   7.12873E+02
+        model norm=   1.07629E+00
+     misfit change=   5.00010E-01
+       norm change=   1.37304E+00
+
+       norm comp 1=   4.70813E-01
+       norm comp 2=   3.73328E-01
+       norm comp 3=   2.32157E-01
+
+          cpu time:   0:00:00
+ 
+
+Iteration    4
+
+  number of basis vectors :  25
+
+  ridge regression curve:
+     ridge        misfit
+  0.152219E+03  0.313544E+03
+  0.304438E+03  0.474933E+03
+
+      chosen ridge=   1.88548E+02
+     target misfit=   3.56437E+02
+   achieved misfit=   3.59224E+02
+        model norm=   2.17767E+00
+     misfit change=   4.96089E-01
+       norm change=   1.02331E+00
+
+       norm comp 1=   7.30885E-01
+       norm comp 2=   8.07914E-01
+       norm comp 3=   6.38876E-01
+
+          cpu time:   0:00:00
+ 
+
+Iteration    5
+
+  number of basis vectors :  25
+
+  ridge regression curve:
+     ridge        misfit
+  0.471369E+02  0.113180E+03
+  0.942738E+02  0.200263E+03
+
+      chosen ridge=   8.26002E+01
+     target misfit=   1.79612E+02
+   achieved misfit=   1.79901E+02
+        model norm=   3.62641E+00
+     misfit change=   4.99195E-01
+       norm change=   6.65271E-01
+
+       norm comp 1=   9.71235E-01
+       norm comp 2=   1.32689E+00
+       norm comp 3=   1.32829E+00
+
+          cpu time:   0:00:00
+ 
+
+Iteration    6
+
+  number of basis vectors :  25
+
+  ridge regression curve:
+     ridge        misfit
+  0.206500E+02  0.556748E+02
+  0.413001E+02  0.924747E+02
+
+      chosen ridge=   3.97679E+01
+     target misfit=   8.99507E+01
+   achieved misfit=   8.96862E+01
+        model norm=   5.18122E+00
+     misfit change=   5.01470E-01
+       norm change=   4.28747E-01
+
+       norm comp 1=   1.15786E+00
+       norm comp 2=   1.89388E+00
+       norm comp 3=   2.12948E+00
+
+          cpu time:   0:00:00
+ 
+
+Iteration    7
+
+  number of basis vectors :  25
+
+  ridge regression curve:
+     ridge        misfit
+  0.128594E+02  0.343402E+02
+  0.226140E+02  0.506386E+02
+  0.228490E+02  0.510411E+02
+
+      chosen ridge=   2.28250E+01
+     target misfit=   5.10000E+01
+   achieved misfit=   5.09999E+01
+        model norm=   6.43117E+00
+     misfit change=   4.31351E-01
+       norm change=   2.41246E-01
+
+       norm comp 1=   1.24061E+00
+       norm comp 2=   2.37267E+00
+       norm comp 3=   2.81789E+00
+
+          cpu time:   0:00:00
+ 
+
+Iteration    8
+
+  number of basis vectors :  25
+
+  ridge regression curve:
+     ridge        misfit
+  0.228250E+02  0.471509E+02
+  0.228251E+02  0.471510E+02
+  0.250041E+02  0.507738E+02
+  0.251414E+02  0.510028E+02
+
+      chosen ridge=   2.51397E+01
+     target misfit=   5.10000E+01
+   achieved misfit=   5.10000E+01
+        model norm=   6.41570E+00
+     misfit change=  -1.49596E-06
+       norm change=  -2.40607E-03
+
+       norm comp 1=   1.26494E+00
+       norm comp 2=   2.35251E+00
+       norm comp 3=   2.79824E+00
+
+          cpu time:   0:00:00
+ 
+
+Iteration    9
+
+  number of basis vectors :  25
+
+  ridge regression curve:
+     ridge        misfit
+  0.251397E+02  0.507512E+02
+  0.251397E+02  0.507512E+02
+  0.502795E+02  0.930338E+02
+
+      chosen ridge=   2.52807E+01
+     target misfit=   5.10000E+01
+   achieved misfit=   5.09823E+01
+        model norm=   6.41393E+00
+     misfit change=   3.46763E-04
+       norm change=  -2.75963E-04
+
+       norm comp 1=   1.26159E+00
+       norm comp 2=   2.35440E+00
+       norm comp 3=   2.79794E+00
+
+          cpu time:   0:00:00
+ 
+
+   Exit at convergence.
+
+
+ Iterations performed:    9
+              chifact:  1.00000000  (supplied)
+                error:  supplied
+                 mesh:  dcinv2d.msh (default)
+      reference model: 0.01  (supplied)
+        initial model: 0.01
+              alpha's:  0.56250E-03 1.0 1.0 (default)
+ 
+     total job cpu:   0:00:02

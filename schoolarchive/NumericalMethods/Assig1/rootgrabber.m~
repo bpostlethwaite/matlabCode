@@ -1,0 +1,30 @@
+function [roots,iter] = rootgrabber(func,nprobe,a,b,tol,maxiter,print)
+% rootgrabber finds roots of the given function.
+% First probes function nprobe times for zero crossings on
+
+
+f1 = '2*cosh(x/4) - x';
+f2 = 'sinc(x)';
+f3 = 'x/4 .* tanh(x/4) - 1';
+
+
+nprobe = 50;
+b = 10;
+a = -10;
+tol = 1e-7;
+maxiter = 50;
+
+try
+[roots,iter] = secant(func,a,b,nprobe,tol,maxiter);
+[roots, m, n] = unique(roots);
+iter = iter(m);
+catch ME    
+end
+
+if print == true;
+    for ii= 1:length(roots)
+        fprintf('found root: %3.6g with %2d iterations\n',roots(ii),iter(ii))
+    end
+end
+
+

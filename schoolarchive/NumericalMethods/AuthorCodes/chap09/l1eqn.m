@@ -1,0 +1,63 @@
+function x = l1eqn (gdata,J,b,kk)
+%
+% function x = l1eqn (gdata,J,b,kk)
+%
+% program that creates data and calls lpl1 (lpm)
+% to solve   min    ||x||_1
+%            s.t.  Jx = b
+%
+% if gdata = 1 then input is created. Otherwise it is imported.
+% Input is read in and includes matrix dimensions.
+% Actual data is created by random number generator rand.
+%
+% Output is x.
+%
+% Method: This is an LP   min c'x s.t. Aw=b, w >= 0
+%         where c=ones, A = .5*(J | -J),
+%         x = .5(u-v) where  w = (u | v). 
+%
+% Problem assumed small enough that direct linear
+% algebra methods may be used.
+
+% create data
+
+if gdata == 1
+  n = input('matrix row dimension :    ');
+  k = input('matrix column dimension : ');
+
+  J = randn(n,k);
+  if kk > n-1
+    xx = rand(k,1);
+    b = J * xx;
+  else
+    % generate a special right hand side
+    xx = randn(kk,1);
+    b = J(:,k-kk:k-1)*xx;
+  end
+else
+  k = size(J,2);
+end  % else we assume J and b have already been defined.
+
+% find x
+
+ticc = cputime;
+m = 2*k;
+c = ones(m,1);
+A = .5*[J,-J];
+
+[w,gap,nbas] = lpl1 (A,b,c,kk);
+
+x = .5*(w(1:k) - w(k+1:m));
+
+time_in_secs = cputime - ticc
+
+ fprintf('\n')
+if gdata == 1
+ % fprintf('exact nonzeros = \n')
+ % xx
+ % fprintf('\n')
+ % fprintf('calculated nonzeros = \n')
+ % xc = x(find(abs(x)> 1.e-2*min(abs(xx))))
+ % fprintf('\n')
+ fprintf('residual = %e \n', norm(b - J*x))
+end 

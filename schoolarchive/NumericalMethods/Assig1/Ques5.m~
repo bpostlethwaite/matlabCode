@@ -1,0 +1,12 @@
+% Question 5
+
+clear all
+close all
+clc
+
+x = linspace(-120,120,1000);
+
+fx = x./(cosh(x/4));
+
+plot(x,fx)
+title('x/cosh(x/4)  note the points where equation 

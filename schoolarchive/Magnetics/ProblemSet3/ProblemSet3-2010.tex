@@ -1,0 +1,99 @@
+\input defs_fonts
+\pageno=1
+
+\headline{ \hfill \today}
+\centerline {\bftv Problem Set 3: Magnetic Field Modeling I:  Dipoles}
+
+ {\bftv\noindent GOALS:}  Build some tools to do simple forward modeling of magnetic field data in cartesian coordinates using dipoles.  
+(1) Derive analytical expressions for the magnetic induction due to a dipole in cartesian coordinates.  (2) Look at the solutions for some simple dipole orientations, and write MATLAB code to plot these solutions (profiles only).  (3) Build MATLAB code to plot the solution for the full vector ${\bf B}$ measured in the x-y plane (e.g., a gridded data set of field observations) due to a single dipole.  
+
+\section {Question 1:  Cartesian coordinates:  general equations for $B_x$, $B_y$, $B_z$}
+
+\noindent In class we showed that the magnetic induction due to a dipole, moment ${\bf m}$ can be written as
+$$ {\bf B} = {\mu_0 m \over 4\pi r^3} \left [ 3 (\hat m \cdot  \hat r) \hat r - \hat m \right ] \eqnum $$
+\noindent where $\hat m = {\bf m} / m$, $\hat r = {\bf r} / r$, and $\mu_0$ is the permeability of free space.  
+Use cartesian coordinates i.e., ${\bf r} = x \hat x + y \hat y + z \hat z$ and ${\bf m} = m_x \hat x + m_y \hat y + m_z \hat z$ to show that
+
+$$ B_x = {\mu_0 \over 4 \pi \left ( x^2 + y^2 + z^2  \right )^{5/2}} \left [ 3 \left ( x m_x + y m_y + z m_z \right ) x - \left ( x^2 + y^2 + z^2  \right ) m_x \right ] \eqnum$$
+
+\noindent and write down the corresponding expressions for $B_y$ and $B_z$.
+
+\section {Question 2:  Vertically Oriented Dipole}
+
+(A):  Assume the coordinate system is oriented such that $\hat x$ points North, $\hat y$ points East and $\hat z$ points down.  
+Remember that the vector ${\bf r}$ in the above equation is the vector from the dipole location to the observer.    So if our observer
+is at a location ${\bf r_p} = [x_p, y_p, z_p]$ and our dipole is at a location ${\bf r_q} = [x_q, y_q, z_q]$, then $x=x_p-x_q$ etc.   
+Assume that the measurements are made on the Earth's surface (i.e. at positions ${\bf r_p} = [x_p, y_p, 0]$, and that the dipole is oriented vertically downward at the position ${\bf r_q} = [0, 0, d]$.
+Show that
+$$B_x = { \mu_0 m_z \over  4 \pi \left ( x_p^2 + y_p^2 + d^2  \right )^{3/2}} \left [{ - 3 d x \over  \left ( x_p^2 + y_p^2 + d^2  \right )} \right ] \eqnum$$
+and write down the equations for $B_y$, $B_z$.
+
+(B):  Now assume you are taking a profile in the x-direction along y=0.
+Show that the distance between the zero crossings of $B_z$ for this vertical dipole is equal to $2 d \sqrt 2$, and that the distance between 
+maximum and minimum values of $B_x$ is equal to $d$.  
+
+(C):  Assume the dipole depth, $d$ = 25m, and that you are taking your ${\bf B}$ profile by making observations every 1m from $x$ = -100m to
+$x$ = 100m.  Let the dipole have a moment of $10^5 A m$.   Write MATLAB code to calculate and plot $B_x$ and $B_z$ as a function of distance, $x$.
+You'll notice that $B_x$ and $B_z$ are on the order of $10^{-6}$ Teslas, so make your final figure in nT (nanoTesla) for easier viewing.  Plot $B_x$ and $B_z$ on the same figure so that you can see their relative magnitudes.  
+
+(D):  Check that the distance between the max($B_x$) and min($B_x$) is indeed $d$.  Do this numerically, not just by ``eye-balling'' the plots.  
+
+{\it Coding hint 1:  Recall from MATLAB class -- the following code snippets will (a) find the index of the position in the $B_x$ array corresponding to the min value of $B_x$, (b) extract the value of x at that index -- assuming of course that $B_x$ has the same dimensions as $x$, which should be the case since you have one observation of $B_x$ at every $x$ position.}
+
+iminBx=find(Bx==min(Bx)); 
+
+xmax=x(imaxBx);
+
+{\it Coding hint 2:  Remember nice formatting to output stuff to the screen:  e.g., I used the following after computing the distance between min and max Bx and assigning it to a variable dist1:} 
+
+fprintf ('Distance between max and min Bx is \%5.2f', dist1); 
+
+fprintf ('Predicted distance, from Part 2B \%5.2f', d);
+
+\section {Question 3:  Inclined dipole in the x-z plane}  
+
+(A):  Now assume your dipole moment ${\bf m}$ is oriented at an angle I to the horizontal, and that it lies in the x-z plane.  Show that along the x-axis the magnetic induction ${\bf B}$
+is given by 
+
+$$ B_x = \beta \left [ \left ( 2 \alpha^2 - 1 \right ) m_x - 3 \alpha\ m_z  \right ] $$
+$$ B_y = 0 $$
+$$ B_z = \beta \left [ -3 \alpha\ m_x +  \left ( 2 - \alpha^2 \right ) m_z \right ] $$
+
+where $ m_x = m\ cos(I)$, $ m_z = m\ sin(I)$, $\alpha = x/d$ (dimensionless) and 
+$$\beta = {\mu_0 \over 4 \pi d^3\ ( \alpha^2+1)^{5/2} }$$.
+
+(B): Write MATLAB code to calculate and plot $B_x$ and $B_z$ as a function of distance, $x$.  Plot $B_x$ and $B_z$ on a single figure.    
+Comment (can write by hand below your printed figure) on how the profiles compare with those for a vertical dipole.
+
+\section {Question 4:  Arbitrarily oriented dipole}
+
+You can see that the analytical expressions quickly become cumbersome as the problem becomes more generalized and that it is not easy to visualize the form of the resulting profiles.  In this 
+section we will develop the code to calculate the full vector ${\bf B}$ measured on the x-y plane at any height, $z$, due to a dipole moment ${\bf m}$.  The dipole moment ${\bf m}$ is specified by its magnitude and 2 directions:  it's azimuth, $D$ in the x-y plane, and inclination, $I$, with respect to the horizontal, such that
+
+$$ m_x = m cos(I) cos(D)$$
+$$ m_y = m cos(I) sin(D)$$
+$$ m_x = m sin(I)$$
+
+(A) Download the skeleton script magdip.m and the function dipm2b.m from the website.  The script lays out the plan for writing the code to compute
+the magnetic induction due to an arbitrary oriented dipole, via comment lines.  Make sure you understand what the function dipm2b.m does (one line at a time).  In the script magdip.m,  write code below each of the comment lines to set up the variables and \slash\ or do the calculations indicated by the comment.
+
+Assume to start with that the dipole orientation and position are as in question 2 above, {\it i.e.,} (1) the dipole is vertically oriented (set $D, I$ accordingly) with moment $m=10^5$ Am as previously.  (2) the dipole is at position vector $[x_q, y_q, z_q]$ as in qn 2.  Assume (3) that observations are take on the plane $z=0, x=-100:1:100, y=-100:1:100$.  Make a figure that shows four contour plots, one each for $B_x$, $B_y$, $B_z$, $B_h$ in the plane of the observations.  $B_h$ is the horizontal component of the magnetic field, 
+$B_h = (B_x^2 + B_y^2)^{1/2}$.  Make sure your figure has labels, units, etc.
+
+(B)  Take a profile along the line y=0 (i.e. along the x axis).  Plot $B_x$, $B_y$, $B_z$ on a single figure.  Check that your $B_x$, $B_z$ profiles look exactly the same as those you obtained in question (2C).  $B_y$ should of course be zero.  This is the kind of check you should always do in coding up more complicated problems -- check that your results match a simple case that you were able to code more easily.  
+
+(C)  Now make the corresponding contour plots (1 figure, 4 subplots) and profiles (1 figure) for a dipole oriented in the x-z plane, inclined at 60$^o$.  Make sure your profiles match those in question (3B).
+
+(D) Make contour plots for a horizontal dipole oriented in the $+ \hat x$ direction.  
+
+\section {Question 5:  Rearranging the equations -- towards estimation and inverse problems}.
+
+Take your equations for $B_x$, $B_y$ and $B_z$ from question \#1 and rearrange them so that you have a matrix equation in the following form
+
+$$ \vec B = G \vec m    \eqnum $$  
+
+where $\vec B$ is a 3N x 1 vector of observations: $[B_x^i, B_y^i, B_z^i]$, where $i$ corresponds to the $i'th$ observation. $\vec m$ is a 3 x 1 vector $[m_x, m_y, m_z]$. G will be a matrix with what dimensions?
+Notice that G encompasses only the ``geometry'' of the problem - i.e. information about the position of the i'th observation (and the constant $\mu_0$).
+
+\end
+\bye

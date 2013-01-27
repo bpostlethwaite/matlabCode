@@ -1,0 +1,35 @@
+clear all
+close all
+
+user = getenv('USER');
+
+cwd = ['/home/',user,'/Dropbox/ComLinks/Programming/matlab/Financial'];
+
+files = dir(cwd);
+ind = 1;
+data = 0;
+date = '00/00/0000';
+
+for ii = 1:length(files)
+    d = files(ii).name;
+    if length(d) > 3
+        if strcmp(d(end-3:end),'.csv')
+            fprintf('Processing %s\n',d)
+            info = importdata(d);
+            data = [data;info.data(:,3)];
+            date = [date;cell2mat(info.textdata(:,1))];
+            ind = ind + 1;
+        end
+    end
+end
+
+date(1,:) = [];
+data(1) = [];
+
+xdata = datenum(date);
+
+mdata = d
+mdata = runmean(data,3);
+
+plot(xdata,data,'r--',xdata,mdata)
+datetick('x')

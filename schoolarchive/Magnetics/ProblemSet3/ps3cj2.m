@@ -1,0 +1,115 @@
+% Play around with testing how close to dipoles A & B each of moment m/2
+% have to be (dipole at depth zq) to give same result as single dipole,
+% moment m, midway between A & B
+%
+% Set up observation grid  xp,yp = -30km to +30km in steps of 0.5 km.
+% Single dipole moment m is at xq=0, yq=0, zq=3 km (prepping for magnetic
+% stripes geometry)
+% Two dipoles each moment mm/2, at either xq=-zq/f and xq=+zq/f,
+% where f=2^l, l= integer
+% or at yq=-zq/f and yq=+zq/f
+
+clear all;
+
+t2nt=1e09;
+
+% dipole moment, m, declination D, inclination I
+mm=1e5;
+D=0;
+I=90;
+mvec=mm*[cosd(I)*cosd(D) cosd(I)*sind(D) sind(I)];
+
+
+tic
+% take observations at positions xp,yp,zp - these are now in km
+xp=-30e03:0.5e03:30e03;
+yp=-30e03:0.5e03:30e03;
+zp=0;
+
+% dipole position, xq, yq, zq
+xq=0;
+yq=0;
+zq=3e03;        %dipole at 3km depth (50% ave. crustal thickness depth)
+
+% need dipole-observer vector
+x=xp-xq;
+y=yp-yq;
+z=zp-zq;
+
+[XX,YY]=meshgrid(x,y);
+ZZ=z*ones(size(XX));
+
+% Now assume dipole has dip, I and azimuth, D
+D=0;
+I=60;
+mvec=mm*[cosd(I)*cosd(D) cosd(I)*sind(D) sind(I)];
+[bx,by,bz]=dipm2b(XX,YY,ZZ,mvec);
+
+
+% now see how close we have to put two dipoles, m/2 to get same result
+%  Part 1 - do this in x-direction
+f=32;
+mmhalf=mm/2;
+xq=-zq/f;       % first dipole
+x=xp-xq;
+[XX,YY]=meshgrid(x,y);
+mvec=mmhalf*[cosd(I)*cosd(D) cosd(I)*sind(D) sind(I)];
+[bx1,by1,bz1]=dipm2b(XX,YY,ZZ,mvec);
+
+xq=-xq;           % first dipole
+x=xp-xq;
+[XX,YY]=meshgrid(x,y);
+mvec=mmhalf*[cosd(I)*cosd(D) cosd(I)*sind(D) sind(I)];
+[bx2,by2,bz2]=dipm2b(XX,YY,ZZ,mvec);
+
+bxp=bx1+bx2;
+byp=by1+by2;
+bzp=bz1+bz2;
+
+% PART 2 - do this in y-direction
+f=16;
+mmhalf=mm/2;
+xq=-0; 
+yq=-zq/f;    % first dipole
+x=xp-xq;
+y=yp-yq;
+[XX,YY]=meshgrid(x,y);
+mvec=mmhalf*[cosd(I)*cosd(D) cosd(I)*sind(D) sind(I)];
+[bx1,by1,bz1]=dipm2b(XX,YY,ZZ,mvec);
+
+yq=-yq;         % second dipole
+y=yp-yq;
+[XX,YY]=meshgrid(x,y);
+mvec=mmhalf*[cosd(I)*cosd(D) cosd(I)*sind(D) sind(I)];
+[bx2,by2,bz2]=dipm2b(XX,YY,ZZ,mvec);
+
+bxp=bx1+bx2;
+byp=by1+by2;
+bzp=bz1+bz2;
+
+toc
+
+
+figure(2)
+yzero=(length(x)+1)/2;
+plot(x,bx(yzero,:)*t2nt,x,by(yzero,:)*t2nt,x,bz(yzero,:)*t2nt)
+hold
+plot(x,bxp(yzero,:)*t2nt,'--',x,byp(yzero,:)*t2nt,'--',x,bzp(yzero,:)*t2nt,'--')
+legend('Bx', 'By', 'Bz')
+xlabel('x-distance (m)')
+ylabel ('nT')
+grid
+title('Sum of two dipoles mm/2 vs single dipole')
+
+dbx=100*(bx(yzero,:)-bxp(yzero,:))./bx(yzero,:);
+dbz=100*(bz(yzero,:)-bzp(yzero,:))./bz(yzero,:);
+mean(dbx)
+mean(dbz)
+
+figure(3)
+plot(x,dbx,x,dbz)
+legend('error-Bx', 'error-Bz')
+xlabel('x-distance (m)')
+ylabel ('% error')
+grid
+

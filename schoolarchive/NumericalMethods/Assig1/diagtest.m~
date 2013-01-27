@@ -1,0 +1,10 @@
+
+
+s = 1:10;
+s = s'
+
+c = ones(length(s),1);
+
+spp = spdiags([-s,c,s],[0,2],length(s),length(s));
+spy(spp)
+full(spp)

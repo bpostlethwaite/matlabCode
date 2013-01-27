@@ -1,0 +1,48 @@
+close all
+clear all
+
+B1=load('/home/ben/workspace/programming/data/driven1.dat');
+B2=load('/home/ben/workspace/programming/data/driven5.dat');
+B3=load('/home/ben/workspace/programming/data/driven10.dat');
+
+C1=load('forced_damped_A=0.5.txt');
+C2=load('forced_damped_A=1.2.txt');
+
+D1=load('forced_damped_A=1.5.txt');
+D2=load('forced_damped_A=1.44.txt');
+D3=load('forced_damped_A=1.665.txt');
+
+P1=load('Poincare_sect_A=1.5.txt');
+P2=load('Poincare_sect_A=1.44.txt');
+P3=load('Poincare_sect_A=1.665.txt');
+
+
+
+figure(1)
+subplot(2,3,[1:3])
+    plot(B1(:,1),B1(:,2),'*',B2(:,1),B2(:,2),'*',B3(:,1),B3(:,2),'*')
+    title('\theta(t) [rad]','FontSize',12)
+    legend('\nu = 1','\nu = 5','\nu = 10')
+    ylabel('angle [rad]')
+    xlabel('time [s]')
+subplot(2,3,4)
+    plot(B1(:,2),B1(:,3),'*')
+    set(gca,'XDir','reverse')
+    title('Phase Space plot for \nu = 1')
+    xlabel('angle [rad]')
+    ylabel('velocity [rad/s]')
+subplot(2,3,5)
+    plot(B2(:,2),B2(:,3),'*')
+    set(gca,'XDir','reverse')
+    title('Phase Space plot for \nu = 5')
+    xlabel('angle [rad]')
+    ylabel('velocity [rad/s]')
+subplot(2,3,6)
+    plot(B3(:,2),B3(:,3),'*')
+    set(gca,'XDir','reverse')
+    title('Phase Space plot for \nu = 10')
+    xlabel('angle [rad]')
+    ylabel('velocity [rad/s]')
+
+
+

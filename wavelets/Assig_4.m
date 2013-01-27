@@ -1,0 +1,93 @@
+%% *Ben Postlethwaite 76676063*
+% *Assignment 2*
+%%
+% Setup
+clear all; close all;
+loadtools;
+
+%% Exercise 1 and 2 - Optimization
+eta = 10;
+%Function f.
+f = @(x)( x(1)^2 + eta*x(2)^2 ) /2;
+%Background image of the function.
+t = linspace(-.7,.7,101);
+[u,v] = meshgrid(t,t);
+F = ( u.^2 + eta*v.^2 )/2 ;
+%Gradient.
+Gradf = @(x)[x(1); eta*x(2)];
+%The step size should satisfy τk<2/η. We use here a constrant step size.
+
+c = ['k','g','r'];
+
+for jj = 1:3
+    if jj == 1
+        x(:,1) = [.6;.6];
+        tau = 1.8/eta;
+    elseif jj == 2
+        x(:,1) = [.6;-.6];
+        tau = 0.5*1.8/eta;
+    else
+        x(:,1) = [-.6;.6];
+        tau = 0.1*1.8/eta;
+    end
+        enf(1) = f(x(:,1)); % Set norm
+        ii = 2;
+    while f(x(:,ii-1)) > 0.001 
+        x(:,ii) = x(:,ii-1) - tau*Gradf(x(:,ii-1)); % Descent
+        enf(ii) = f(x(:,ii)); % Calculate L2 norm
+        ii = ii + 1;
+    end
+
+if jj == 1
+    figure(321)
+    plot(0:length(enf)-1,log10(enf))
+    title('Log_1_0 Energy norm|x|')
+    xlabel('Iteration')
+    ylabel('log_1_0 norm|x|')
+    axis tight
+    
+    figure(333); hold on;
+    imagesc(t,t,F); colormap jet(256);
+    contour(t,t,F, 20, 'k');
+end
+figure(333)
+h = plot(x(1,:), x(2,:), sprintf('%s.-',c(jj)));
+set(h, 'LineWidth', 2);
+set(h, 'MarkerSize', 15);
+axis off; axis equal;
+end
+
+%% Exercise 3 - Optimization
+n = 256;
+name = 'lena';
+x0 = rescale( load_image(name, n) );
+sigma = .1;
+y = x0 + randn(n)*sigma;
+%Value for λ.
+lambda = .3;
+%Value for ε.
+epsilon = 1e-3;
+%TV norm.
+Amplitude = @(u)sqrt(epsilon^2 + sum(u.^2,3));
+J = @(x)sum(sum(Amplitude(grad(x))));
+%Function to minimize.
+f = @(x)1/2*norm(x-y,'fro')^2 + lambda*J(x);
+%Gradient of TV norm. Note that div implement −G∗.
+Normalize = @(u)u./repmat(Amplitude(u), [1 1 2]);
+GradJ = @(x)-div( Normalize(grad(x)) );
+%Gradient of the functional.
+Gradf = @(x)x-y+lambda*GradJ(x);
+%Here we use a slightly larger step size, which still work in practice.
+tau = 1.8/( 1 + lambda*8/epsilon );
+tau = tau*4;
+itermax = 100;
+x = randn(n)*sigma;
+iter = 1;
+while iter < itermax
+    dx = x - Gradf(x);
+    x = x + dx;
+    iter = iter + 1;
+end
+hold off
+figure(99)
+imageplot(x);

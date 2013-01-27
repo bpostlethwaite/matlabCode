@@ -1,0 +1,22 @@
+
+m=[2,5,10,100];
+x=linspace(-pi,pi);
+
+Y =-0.5*(cos(x)-sin(x));
+
+for jj = 1:4
+for n = 2:m(jj)
+    
+    G =( (((-1)^n)/(n^2+1))*(cos(n*x)-sin(n*x)));
+    Y = Y + G;
+    
+   
+F=sinh(pi)/pi+2*sinh(pi)/pi * Y;
+
+subplot(2,2,jj);
+  plot(x,F);
+  title(['for n = ',num2str(m(jj)),]);
+
+
+end
+end
