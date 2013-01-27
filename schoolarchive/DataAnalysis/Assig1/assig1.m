@@ -10,7 +10,11 @@ TYPE = {'Pearson';'Spearman'};
 for i = 1:3
     Xi = [ones(length(X(:,i)),1),X(:,i)]; % Xi = 1 + xi
     Yi = Y(:,i); % Yi = yi
+<<<<<<< HEAD
     Beta = (Xi'*Xi)\(Xi'*Yi); %Solve for coefficents Beta (a0 a1)
+=======
+    Beta = (Xi'*Xi)\Xi'*Yi; %Solve for coefficents Beta (a0 a1)
+>>>>>>> origin/master
     R(:,i) = Xi*Beta;       % Regression Line = Xi*Beta
     for j = 1:2
         rho(i,j) = corr(X(:,i),Y(:,i),'type',TYPE{j}); % Get Correlation

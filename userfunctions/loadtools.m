@@ -3,9 +3,16 @@
 
 userdir = getenv('HOME');
 f = fullfile(userdir, 'programming','matlab');
+<<<<<<< HEAD
 
 getd = @(p)path(p,path); % 
 
 getd([f,'/toolbox_signal/']);
 getd([f,'/toolbox_general/']);
+=======
+getd = @(p)path(p,path); % 
+
+%getd([f,'/toolbox_signal/']);
+%getd([f,'/toolbox_general/']);
+>>>>>>> origin/master
 

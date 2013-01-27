@@ -1,7 +1,13 @@
 clear all; close all;
+<<<<<<< HEAD
 c=1; % speed of wave;
 dx=1; % space step;
 dt=0.1; % time step;
+=======
+c = 1; % speed of wave;
+dx = 1; % space step;
+dt = 0.1; % time step;
+>>>>>>> origin/master
 szx=200;
 szy=200; % sizes
 tm=1000; % time

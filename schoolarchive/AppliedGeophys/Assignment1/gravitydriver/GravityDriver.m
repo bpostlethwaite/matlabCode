@@ -55,7 +55,12 @@ d = reshape(D,[n,n]);
  %using target depth mode)
  depthTarget = 60;
  [W,Wz] = getW(n+1,depthTarget);
+<<<<<<< HEAD
  
+=======
+ figure(7);
+spy(W)
+>>>>>>> origin/master
  % set W as a combination of given W and W for locating at depth
  WtW = W'*W;
  %WtW = W'*W;

@@ -7,10 +7,13 @@ szy=200; % sizes
 tm=1000; % time
 k=0.002; % decay factor
 
+<<<<<<< HEAD
 dp=0.01; % droplet probability per one time sterp
 dsz=3; % droplet size
 da=20; % droplet amplitude
 
+=======
+>>>>>>> origin/master
 x=0:dx:szx;
 y=0:dx:szy; % space
 t=0:dt:tm; % time
@@ -19,6 +22,10 @@ Lx=length(x);
 Ly=length(y);
 
 u=zeros(Ly,Lx); % initial value
+<<<<<<< HEAD
+=======
+u(50,70)=100; 
+>>>>>>> origin/master
 uo=u; % previose = curent => velocties =0
 
 close all;
@@ -42,6 +49,7 @@ kdt=k*dt;
 c1=dt^2*c^2/dx^2;
 lc=1;
 dlc=15;
+<<<<<<< HEAD
 
 
 % droplet as gaussian 
@@ -53,6 +61,9 @@ point = [0,0];   % This is the current clicked cursor position in figure
 point0 = point;  % This is the previous clicked cursor position
 
 while true
+=======
+for tt=t
+>>>>>>> origin/master
     un=(2-kdt)*u+(kdt-1)*uo+c1*conv2(u,D,'same'); % new
     
     uo=u; % curent become old
@@ -63,6 +74,7 @@ while true
         drawnow;
     end
     
+<<<<<<< HEAD
     
     if mod(lc-1,1)==0  % Don't want to check too much for speed
         pointg = get(ha,'CurrentPoint'); % Get current clicked point
@@ -82,6 +94,8 @@ while true
     end
     
     
+=======
+>>>>>>> origin/master
     lc=lc+1;
 end
 

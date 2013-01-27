@@ -8,7 +8,11 @@ z = exp([0.1;0.9;2]);
 
 b = log(z);
 A = [ones(3,1),t];
+<<<<<<< HEAD
 u = A \ b;
+=======
+u = A\b;
+>>>>>>> origin/master
 uu = [exp(u(1));u(2)];
 
 b = z;
